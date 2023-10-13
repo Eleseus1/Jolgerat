@@ -1,8 +1,9 @@
 import random
 import copy  
 import sys
+import os
 
-# The names and the stats(1=strength,2=strength, 3=Health)
+# The names and the stats(1:names,2:strength,3:health)
 knight = ["Knight",6,12]
 demon = ["Demon",15,10]
 crow = ["Crow",5,3]
@@ -76,17 +77,15 @@ def drawB():
 
 
 # The dice
-dice = ["1", "2", "3", "4", "5", "6"]
 AdStrengthA = 0
 AdStrengthB = 0
 
 def roll():
-    global dice
     global AdStrengthA
     global AdStrengthB
 
-    AdStrengthA = random.choice(dice)
-    AdStrengthB = random.choice(dice)
+    AdStrengthA = random.randint(1,6)
+    AdStrengthB = random.randint(1,6)
     print("Your Additional strength:",AdStrengthA)
     print("Your enemys Additional strength",AdStrengthB)
     
@@ -230,13 +229,17 @@ def fight():
 
     return fieldA,fieldB,damage,playerHealthA,playerHealthB
 
-# this function checks if a creature or the player is dead
+# this function checks if a creature or the player is dead, and it tracks the looses and the wins
 def check1():
     global playerHealthA
     global playerHealthB
     if playerHealthA <= 0:
+        playerHealthA = 0
         print("You lost!")
+       # with open("Stats.txt", "a") as f:
+        #    f.write("You: {}\nEnemy: {}\n".format(player_score, ai_score))
     elif playerHealthB <= 0:
+        playerHealthB
         print("You win!")
     
 def check2():
@@ -250,6 +253,13 @@ def check2():
         fieldB= "default"
     return fieldA,fieldB
 
+# The preparation of the Stats.txt file
+if os.path.getsize("stats.txt") == 0:
+    with open("stats.txt", "w") as f:
+        f.write("Wins = 0\n")
+        f.write("Looses = 0\n")
+
+
 # the menu
 print("WELCOME TO JOLGERAT")
 print(" ")
@@ -259,7 +269,7 @@ print("[3] Stats")
 print("[4] Credits")
 print("[5] Exit")
 firstChoice = input("1/2/3/4/5 ")
-while firstChoice !="1"or"2"or"3":
+while firstChoice == "1"or"2"or"3"or"4"or"5":
     if firstChoice == "1":
         # The core
         while playerHealthA > 0 and playerHealthB > 0:
@@ -267,11 +277,12 @@ while firstChoice !="1"or"2"or"3":
             drawB()
             cardSelection(handA,handB)
             removeFromHand()
-            print("You",fieldA[0],"S:",fieldA[1],"H:",fieldA[2])
-            print("Enemy",fieldB[0],"S:",fieldB[1],"H:",fieldB[2])
+            print("You:",fieldA[0],"S:",fieldA[1],"H:",fieldA[2])
+            print("Enemy:",fieldB[0],"S:",fieldB[1],"H:",fieldB[2])
             fight()
             check2()
             check1()
+        input("enter to go back to main menu ")
         print(" ")
         print("[1] Play")
         print("[2] Tutorial")
@@ -297,10 +308,14 @@ while firstChoice !="1"or"2"or"3":
         print("[4] Credits")
         print("[5] Exit")
         firstChoice = input("1/2/3/4/5 ")
+    elif firstChoice == "3":
+        with open("stats.txt", "r") as f:
+             print(f.read())
     elif firstChoice == "4":
         print("Eleseus")
         print("DVillablanca")
         print("Chat GPT")
+        input("enter to go back to main menu ")
         print(" ")
         print("[1] Play")
         print("[2] Tutorial")
