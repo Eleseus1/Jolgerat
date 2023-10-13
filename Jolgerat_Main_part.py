@@ -1,0 +1,326 @@
+import random
+import copy  
+import sys
+
+# The names and the stats(1=strength,2=strength, 3=Health)
+knight = ["Knight",6,12]
+demon = ["Demon",15,10]
+crow = ["Crow",5,3]
+prince = ["Prince",7,7]
+skeleton = ["Skeleton",10,5]
+
+# The decks
+deckA = [knight, knight, knight, knight, demon, demon, crow, crow, crow, crow, crow, prince, prince, prince, prince, skeleton, skeleton, skeleton, skeleton]
+deckB = [knight, knight, knight, knight, demon, demon, crow, crow, crow, crow, crow, prince, prince, prince, prince, skeleton, skeleton, skeleton, skeleton]
+
+# Hand A
+cardA1 = "default"
+cardA2 = "default"
+cardA3 = "default"
+handA = "default"
+
+# This changes the cards from player A
+def drawA():
+    global cardA1
+    global cardA2
+    global cardA3
+    global deckA
+    global handA
+
+    if cardA1 == "default":
+        cardA1 = copy.deepcopy(random.choice(deckA))
+        deckA.remove(cardA1)
+
+    if cardA2 == "default":
+        cardA2 = copy.deepcopy(random.choice(deckA))
+        deckA.remove(cardA2)
+
+    if cardA3 == "default":
+        cardA3 = copy.deepcopy(random.choice(deckA))
+        deckA.remove(cardA3)
+
+    handA = [cardA1, cardA2, cardA3]
+
+    return cardA1, cardA2, cardA3, deckA, handA
+
+
+# Hand B
+cardB1 = "default"
+cardB2 = "default"
+cardB3 = "default"
+handB = "default"
+
+# This changes the cards from player B
+def drawB():
+    global cardB1
+    global cardB2
+    global cardB3
+    global deckB
+    global handB
+
+    if cardB1 == "default":
+        cardB1 = copy.deepcopy(random.choice(deckB))
+        deckB.remove(cardB1)
+
+    if cardB2 == "default":
+        cardB2 = copy.deepcopy(random.choice(deckB))
+        deckB.remove(cardB2)
+
+    if cardB3 == "default":
+        cardB3 = copy.deepcopy(random.choice(deckB))
+        deckB.remove(cardB3)
+
+    handB = [cardB1, cardB2, cardB3]
+
+    return cardB1, cardB2, cardB3, deckB, handB
+
+
+# The dice
+dice = ["1", "2", "3", "4", "5", "6"]
+AdStrengthA = 0
+AdStrengthB = 0
+
+def roll():
+    global dice
+    global AdStrengthA
+    global AdStrengthB
+
+    AdStrengthA = random.choice(dice)
+    AdStrengthB = random.choice(dice)
+    print("Your Additional strength:",AdStrengthA)
+    print("Your enemys Additional strength",AdStrengthB)
+    
+    return AdStrengthA, AdStrengthB
+
+cardA = "default"
+cardB = "default"
+choice = "default"
+fieldA = "default"
+fieldB = "default"
+# This is where the cards get selected
+def cardSelection(handA, handB):
+    global cardA
+    global cardB  
+    global choice
+    global fieldA
+    global fieldB
+
+    if fieldB == "default":
+        cardB = copy.deepcopy(random.choice(handB))
+        fieldB = cardB
+    if fieldA == "default":
+        print("[1]", cardA1[0], cardA1[1], cardA1[2], "[2]", cardA2[0], cardA2[1], cardA2[2], "[3]", cardA3[0], cardA3[1], cardA3[2])
+        while choice != "1" or "2" or "3":
+            choice = input(str("Select a card (1/2/3): "))
+            if choice == "1":
+                cardA = copy.deepcopy(handA[0])
+                fieldA = cardA
+                choice = "0"
+                break
+            elif choice == "2":
+                cardA = copy.deepcopy(handA[1])
+                choice = "0"
+                fieldA = cardA
+                break
+            elif choice == "3":
+                cardA = copy.deepcopy(handA[2])
+                fieldA = cardA
+                choice = "0"
+                break
+            else:
+                print("please select a card")
+    return cardA, choice, cardB, fieldA, fieldB
+
+
+def removeFromHand():
+    global cardA
+    global cardB
+    global cardA1
+    global cardA2
+    global cardA3
+    global deckA
+    global handA
+    global cardB1
+    global cardB2
+    global cardB3
+    global deckB
+    global handB
+
+    if cardA == cardA1:
+        cardA1 = "default"
+    elif cardA == cardA2:
+        cardA2 = "default"
+    elif cardA == cardA3:
+        cardA3 = "default"
+    elif cardB == cardB1:
+        cardB1 = "default"
+    elif cardB == cardB2:
+        cardB2 = "default"
+    elif cardB == cardB3:
+        cardB3 = "default"
+    return cardA1,cardA2,cardA3,cardB1,cardB2,cardB3,cardA,cardB,handB,handA,deckA,deckB
+
+strenghA=0
+strengthB=0
+damage=0
+playerHealthA = 20
+playerHealthB = 20
+s1=0
+s2=0
+s3=0
+s4=0
+
+# this function does all the mathmatical stuff for the fights between the creatures
+def fight():
+    global fieldA
+    global fieldB
+    global strenghA
+    global strenghB
+    global damage
+    global playerHealthA
+    global playerHealthB
+    global s1
+    global s2
+    global s3
+    global s4
+    print(input("enter to start fight"))
+    roll()
+    s1=copy.copy(fieldA[1])
+    s2=copy.copy(fieldA[1])
+    s3=copy.copy(fieldB[1])
+    s4=copy.copy(fieldB[1])
+    strenghA = fieldA[1] + int(AdStrengthA)
+    strenghB = fieldB[1] + int(AdStrengthB)
+    if strenghA > strenghB:
+        damage=strenghA - strenghB
+        if damage > fieldB[2]:
+            damage = damage - fieldB[2]
+            fieldB[2]=0
+            playerHealthB = playerHealthB - damage
+            print("Your creature wins and inflicts",damage,"damage to your enemy")
+            print("Your enemy has",playerHealthB,"left")
+        else:
+            fieldB[2] = fieldB[2] - damage
+            print("Your creature wins and inflicts",damage,"damage")
+    elif strenghA < strenghB:
+        damage=strenghB - strenghA
+        if damage > fieldA[2]:
+            damage = damage - fieldA[2]
+            fieldA[2]=0
+            playerHealthA = playerHealthA - damage
+            print("Your enemys creature wins and inflicts",damage,"damage to you")
+            print("You have",playerHealthA," health left")
+        else:
+            fieldA[2] = fieldA[2]- damage
+            print("Your enemys creature wins and inflicts",damage,"damage")
+    elif strenghA == strenghB:
+        print("Draw")
+
+    fieldA[1] = s2 - s3
+    fieldB[1] = s4 - s1
+    s1=copy.copy(fieldA[1])
+    s2=copy.copy(fieldA[1])
+    s3=copy.copy(fieldB[1])
+    s4=copy.copy(fieldB[1])
+
+    if fieldA[1] < 1:
+        fieldA[1]= 1
+    if fieldB[1] < 1:
+        fieldB[1]= 1
+
+    return fieldA,fieldB,damage,playerHealthA,playerHealthB
+
+# this function checks if a creature or the player is dead
+def check1():
+    global playerHealthA
+    global playerHealthB
+    if playerHealthA <= 0:
+        print("You lost!")
+    elif playerHealthB <= 0:
+        print("You win!")
+    
+def check2():
+    global fieldA
+    global fieldB
+    if fieldA[2] <= 0:
+        print("Your",fieldA[0] + "  is dead")
+        fieldA= "default"
+    elif fieldB[2] <= 0:
+        print("Your enemys",fieldB[0] + " is dead")
+        fieldB= "default"
+    return fieldA,fieldB
+
+# the menu
+print("WELCOME TO JOLGERAT")
+print(" ")
+print("[1] Play")
+print("[2] Tutorial")
+print("[3] Stats")
+print("[4] Credits")
+print("[5] Exit")
+firstChoice = input("1/2/3/4/5 ")
+while firstChoice !="1"or"2"or"3":
+    if firstChoice == "1":
+        # The core
+        while playerHealthA > 0 and playerHealthB > 0:
+            drawA() 
+            drawB()
+            cardSelection(handA,handB)
+            removeFromHand()
+            print("You",fieldA[0],"S:",fieldA[1],"H:",fieldA[2])
+            print("Enemy",fieldB[0],"S:",fieldB[1],"H:",fieldB[2])
+            fight()
+            check2()
+            check1()
+        print(" ")
+        print("[1] Play")
+        print("[2] Tutorial")
+        print("[3] Stats")
+        print("[4] Credits")
+        print("[5] Exit")
+        firstChoice = input("1/2/3/4/5 ")
+    elif firstChoice == "2":
+        print("Each player draws three cards, then chooses one of the cards to play in the center.")
+        print("As soon as he plays a card, he draws a new one.")
+        print("Each card is a creature and each creature has a base strength and health.")
+        print("At the beginning of a combat sequence, each player rolls a dice, and the value rolled (additional strength) is added to the base strength for that combat sequence.")
+        print("The creature with the higher combat strength (base strength + additional strength) wins the combat")
+        print("and the creature that lost gets the combat strength it could not absorb with its own combat strength subtracted from its health.")
+        print("If a creature cannot absorb the combat strength with its own health, it dies and the excess combat strength is subtracted from the health of the player whose creature died.")
+        print("At the end of each battle, each creature loses base strength equal to the base strength of the other creature.")
+        print("Each player has 20 health, if the health of a player drops to 0, he has lost.")
+        input("enter to go back to main menu ")
+        print(" ")
+        print("[1] Play")
+        print("[2] Tutorial")
+        print("[3] Stats")
+        print("[4] Credits")
+        print("[5] Exit")
+        firstChoice = input("1/2/3/4/5 ")
+    elif firstChoice == "4":
+        print("Eleseus")
+        print("DVillablanca")
+        print("Chat GPT")
+        print(" ")
+        print("[1] Play")
+        print("[2] Tutorial")
+        print("[3] Stats")
+        print("[4] Credits")
+        print("[5] Exit")
+        firstChoice = input("1/2/3/4/5 ")
+    elif firstChoice == "5":
+        sys.exit()
+
+# I used this codeblock to test everything
+#drawA()
+#drawB()
+#cardSelection(handA,handB)
+#print("Your card: ",fieldA[0],"S:",fieldA[1],"H:",fieldA[3])
+#print("Opponents card",fieldB[0],"S:",fieldB[2],"H:",fieldB[3])
+#removeFromHand()
+#fight(fieldA,fieldB)
+#drawA()
+#drawB()
+#cardSelection(handA,handB)
+#print("Your card: ",fieldA[0],"S:",fieldA[1],"H:",fieldA[3])
+#print("Opponents card",fieldB[0],"S:",fieldB[2],"H:",fieldB[3])
