@@ -22,10 +22,10 @@ trap = ["Trap","","","spell"]
 # The decks
 deckA = [
     knight, knight, knight, knight, demon, demon, crow, crow, crow, crow, crow, prince, prince, prince, prince, skeleton, skeleton, skeleton, skeleton,
-    joker, sacrifice_shield, sacrifice_shield, sacrifice_shield, execution, execution, execution, execution, smith, smith, smith, smith, smith,
-    trap, trap
+    joker, sacrifice_shield, sacrifice_shield, sacrifice_shield, execution, execution, execution, smith, smith, smith, trap, trap
     ]
 deckB = copy.deepcopy(deckA)
+deckB = [card for card in deckB if card[3] != "spell"]
 cardA1 = "default"
 cardA2 = "default"
 cardA3 = "default"
@@ -110,6 +110,7 @@ fieldB = "default"
 spellA = "default"
 spellB = "default" # right now bots can't use spells so this variable is useless
 sac_decision = []
+text = "default"
 
 # The functions for the spells
 def spell_smith():
@@ -136,41 +137,91 @@ def spell_sacrifice_shield2():
     global pHA
     global damage
     global handA
-    if cardA1 == sacrifice_shield:
-        cardA1 = "default"
-        drawA()
-    elif cardA2 == sacrifice_shield:
-        cardA2 = "default"
-        drawA()
-    elif cardA3 == sacrifice_shield:
-        cardA3 = "default"
-        drawA()
-    if playerHealthA < pHA:
-        choice = input("You are about to take ",damage," damage! Do you want to play a Sacrifice Shield?[y/n] ")
+    global cardA1
+    global cardA2
+    global cardA3
+    global damageaverted
+    global text
+    if playerHealthA < pHA and sacrifice_shield in handA:
+        choice = input("You are about to take " + str(damage) + " damage! Do you want to use a Sacrifice Shield?[y/n] ")
         if choice == "y":
-            if cardA1[3] == "creature"or cardA1[3] == "creatureE":
-                sac_decision.append("[1]",cardA1[0:3])
-            elif cardA1[3] != "creature"or cardA1[3] == "creatureE":
-                sac_decision.append("[/]","")
-            if cardA2[3] == "creature"or cardA1[3] == "creatureE":
-                sac_decision.append("[2]",cardA2[0:3])
-            elif cardA2[3] != "creature"or cardA1[3] == "creatureE":
-                sac_decision.append("[/]","")
-            if cardA3[3] == "creature"or cardA1[3] == "creatureE":
-                sac_decision.append("[3]",cardA3[0:3])
-            elif cardA3[3] != "creature"or cardA1[3] == "creatureE":
-                sac_decision.append("[/]","")
-            print(sac_decision)
-            sacrifice = input("(",sac_decision[0],sac_decision[2],sac_decision[4],")")
-            if sacrifice == "1" and sac_decision[0] != "[/]":
-                damage -= cardA1
-                damage2 = copy.copy(damage) #to do
-                if damage <= 0:
-                    damage = 0
-                print("Your",sac_decision,)
-            elif sac_decision[0] == "[/]":
-                print("You can't sacrifice that card")
-    return damage, pHA, playerHealthA, handA
+            if cardA1 == sacrifice_shield:
+                cardA1 = "default"
+                drawA()
+            elif cardA2 == sacrifice_shield:
+                cardA2 = "default"
+                drawA()
+            elif cardA3 == sacrifice_shield:
+                cardA3 = "default"
+                drawA()
+
+            sac_decision = []
+
+            if cardA1[3] == "creature" or cardA1[3] == "creatureE":
+                sac_decision.append("[1]")
+                sac_decision.append(cardA1[0:3])
+            elif cardA1[3] != "creature" or cardA1[3] == "creatureE":
+                sac_decision.append("[/]")
+                sac_decision.append("")
+
+            if cardA2[3] == "creature" or cardA2[3] == "creatureE":
+                sac_decision.append("[2]")
+                sac_decision.append(cardA2[0:3])
+            elif cardA2[3] != "creature" or cardA2[3] == "creatureE":
+                sac_decision.append("[/]")
+                sac_decision.append("")
+
+            if cardA3[3] == "creature" or cardA3[3] == "creatureE":
+                sac_decision.append("[3]")
+                sac_decision.append(cardA3[0:3])
+            elif cardA3[3] != "creature" or cardA3[3] == "creatureE":
+                sac_decision.append("[/]")
+                sac_decision.append("")
+
+            print(sac_decision[0], sac_decision[1], sac_decision[2], sac_decision[3], sac_decision[4], sac_decision[5])
+            sacrifice = input("(" + sac_decision[0] + sac_decision[2] + sac_decision[4] + ") ")
+            
+            while sacrifice != "1" or "2" or "3":
+                if sacrifice == "1" and sac_decision[0] != "[/]":
+                    damage2 = copy.copy(damage)
+                    damage -= cardA1[2]
+                    if damage < 0:
+                        damage = 0
+                    text = ("Your ", sac_decision[1], " saved you from ", str(damage2), " damage, you only lose " + str(damage) + " health")
+                    print(text)
+                    damageaverted = damage2 - damage
+                    break
+                elif sacrifice == "2" and sac_decision[2] == "[/]":
+                    print("You can't sacrifice that card")
+                elif sacrifice == "2" and sac_decision[2] != "[/]":
+                    damage2 = copy.copy(damage)
+                    damage = damage - cardA2[2]
+                    if damage < 0:
+                        damage = 0
+                    if damage2 < 0:
+                        damage2 = 0
+                    text = ("Your ", sac_decision[3], " saved you from ", str(damage2), " damage, you only lose " + str(damage) + " health")
+                    print(text)
+                    damageaverted = damage2 - damage
+                    break
+                elif sacrifice == "3" and sac_decision[4] != "[/]":
+                    damage2 = copy.copy(damage)
+                    damage -= cardA3[2]
+                    if damage < 0:
+                        damage = 0
+                    if damage2 < 0:
+                        damage2 = 0
+                    text = ("Your ", sac_decision[5], " saved you from ", str(damage2), " damage, you only lose " + str(damage) + " health")
+                    print(text)
+                    damageaverted = damage2 - damage
+                    break
+                elif sacrifice == "3" and sac_decision[4] == "[/]":
+                    print("You can't sacrifice that card")
+                else:
+                    print("Please select a creature to sacrifice")
+    return damage, pHA, playerHealthA, handA, cardA1, cardA2, cardA3, damageaverted, text
+
+
 
 
 def spell_execution():
@@ -278,6 +329,7 @@ s1=0
 s2=0
 s3=0
 s4=0
+damageaverted = 0
 
 # this function does all the mathmatical stuff for the fights between the creatures ant it lowers the player health if it should get lower
 def fight():
@@ -292,6 +344,8 @@ def fight():
     global s2
     global s3
     global s4
+    global damageaverted
+    global text
     print(input("enter to start fight"))
     roll()
     s1=copy.copy(fieldA[1])
@@ -316,7 +370,12 @@ def fight():
         if damage > fieldA[2]:
             damage = damage - fieldA[2]
             fieldA[2]=0
+            spell_sacrifice_shield1()
             playerHealthA = playerHealthA - damage
+            spell_sacrifice_shield2()
+            playerHealthA = playerHealthA + damageaverted
+            damageaverted = 0
+            text = "default"
             print("Your enemys creature wins and inflicts",damage,"damage to you")
             print("You have",playerHealthA," health left")
         else:
@@ -337,7 +396,7 @@ def fight():
     if fieldB[1] < 1:
         fieldB[1]= 1
 
-    return fieldA,fieldB,damage,playerHealthA,playerHealthB
+    return fieldA, fieldB, damage, playerHealthA, playerHealthB, damageaverted
 
 # this function checks if a creature or the player is dead, and it tracks the looses and the wins
 def check1():
