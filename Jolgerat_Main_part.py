@@ -121,7 +121,7 @@ def spell_joker():
     fieldA = "default"
     fieldB = "default"
     return fieldA,fieldB
-def spell_sacrifice_shield():
+def spell_sacrifice_shield(): # To do
     global playerHealthA
 def spell_execution():
     global fieldA
@@ -131,15 +131,24 @@ def spell_trap():
     global fieldB
     global trap
     global spellA
+
     if spellA == "default":
         spellA = trap
-        if fieldB != "default":
-            fieldBempty =False
-        elif fieldB == "default":
-            fieldBempty = True
+
+    if fieldB != "default":
+        fieldBempty = False
+    elif fieldB == "default":
+        fieldBempty = True
     elif spellA != "default":
         print("You can't play a Trap now")
-    if fieldBempty == True:
+
+    if fieldBempty:
+        if fieldB == "default": 
+            fieldA[1] -= 5
+            fieldA[2] -= 5
+            spellA = "default"
+
+    return fieldA, fieldB, spellA
 
 
 # This is where the cards get selected
@@ -316,7 +325,7 @@ print("[4] Credits")
 print("[5] Exit")
 firstChoice = input("1/2/3/4/5 ")
 while firstChoice == "1"or"2"or"3"or"4"or"5":
-    if firstChoice == "1":
+    if firstChoice == "1": # play
         # The core
         while playerHealthA > 0 and playerHealthB > 0:
             drawA() 
@@ -336,7 +345,7 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
         print("[4] Credits")
         print("[5] Exit")
         firstChoice = input("1/2/3/4/5 ")
-    elif firstChoice == "2":
+    elif firstChoice == "2": # Turtorial ; Update turtorial
         print("Each player draws three cards, then chooses one of the cards to play in the center.")
         print("As soon as he plays a card, he draws a new one.")
         print("Each card is a creature and each creature has a base strength and health.")
@@ -354,7 +363,7 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
         print("[4] Credits")
         print("[5] Exit")
         firstChoice = input("1/2/3/4/5 ")
-    elif firstChoice == "3":
+    elif firstChoice == "3": # Stats 
         print("This feature is not done yet. Come back another time :)")
         #with open("stats.py", "r") as f:
        #      print(f.read())
@@ -366,7 +375,7 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
         print("[4] Credits")
         print("[5] Exit")
         firstChoice = input("1/2/3/4/5 ")
-    elif firstChoice == "4":
+    elif firstChoice == "4": # Credits
         print("Eleseus")
         print("DVillablanca")
         print("Chat GPT")
@@ -378,7 +387,7 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
         print("[4] Credits")
         print("[5] Exit")
         firstChoice = input("1/2/3/4/5 ")
-    elif firstChoice == "5":
+    elif firstChoice == "5": # Exit 
         sys.exit()
 
 # I used this codeblock to test everything
