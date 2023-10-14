@@ -2,19 +2,30 @@ import random
 import copy  
 import sys
 import os
+import pathlib
 
-# The names and the stats(1:names,2:strength,3:health)
-knight = ["Knight",6,12]
-demon = ["Demon",15,10]
-crow = ["Crow",5,3]
-prince = ["Prince",7,7]
-skeleton = ["Skeleton",10,5]
+test = os.getcwd()
+print(test+"/Jolgerat/stats.py")
+# The creatures (0:names,1:strength,2:health,3:class)
+knight = ["Knight",6,12,"creature"]
+demon = ["Demon",15,10,"creature"]
+prince = ["Prince",7,7,"creature"]
+crow = ["Crow",5,3,"creature"]
+skeleton = ["Skeleton",10,5,"creature"]
+# The spells (0:names,1:class)
+joker = ["Joker","","","spell"]
+sacrifice_shield = ["Sacrifice shield","","","spell"]
+execution = ["Execution","","","spell"]
+smith = ["Smith","","","spell"]
+trap = ["Trap","","","spell"]
 
 # The decks
-deckA = [knight, knight, knight, knight, demon, demon, crow, crow, crow, crow, crow, prince, prince, prince, prince, skeleton, skeleton, skeleton, skeleton]
-deckB = [knight, knight, knight, knight, demon, demon, crow, crow, crow, crow, crow, prince, prince, prince, prince, skeleton, skeleton, skeleton, skeleton]
-
-# Hand A
+deckA = [
+    knight, knight, knight, knight, demon, demon, crow, crow, crow, crow, crow, prince, prince, prince, prince, skeleton, skeleton, skeleton, skeleton,
+    joker, sacrifice_shield, sacrifice_shield, sacrifice_shield, execution, execution, execution, execution, smith, smith, smith, smith, smith,
+    trap, trap
+    ]
+deckB = copy.deepcopy(deckA)
 cardA1 = "default"
 cardA2 = "default"
 cardA3 = "default"
@@ -96,6 +107,41 @@ cardB = "default"
 choice = "default"
 fieldA = "default"
 fieldB = "default"
+spellA = "default"
+spellB = "default" # right now bots can't use spells so it's useless
+
+# The functions for the spells
+def spell_smith():
+    global fieldA
+    fieldA[1] += 5
+    return fieldA
+def spell_joker():
+    global fieldA
+    global fieldB
+    fieldA = "default"
+    fieldB = "default"
+    return fieldA,fieldB
+def spell_sacrifice_shield():
+    global playerHealthA
+def spell_execution():
+    global fieldA
+    fieldA = "default"
+    return fieldA
+def spell_trap():
+    global fieldB
+    global trap
+    global spellA
+    if spellA == "default":
+        spellA = trap
+        if fieldB != "default":
+            fieldBempty =False
+        elif fieldB == "default":
+            fieldBempty = True
+    elif spellA != "default":
+        print("You can't play a Trap now")
+    if fieldBempty == True:
+
+
 # This is where the cards get selected
 def cardSelection(handA, handB):
     global cardA
@@ -236,7 +282,7 @@ def check1():
     if playerHealthA <= 0:
         playerHealthA = 0
         print("You lost!")
-       # with open("Stats.txt", "a") as f:
+       # with open("Stats.py", "a") as f:
         #    f.write("You: {}\nEnemy: {}\n".format(player_score, ai_score))
     elif playerHealthB <= 0:
         playerHealthB
@@ -253,11 +299,11 @@ def check2():
         fieldB= "default"
     return fieldA,fieldB
 
-# The preparation of the Stats.txt file
-if os.path.getsize("stats.txt") == 0:
-    with open("stats.txt", "w") as f:
-        f.write("Wins = 0\n")
-        f.write("Looses = 0\n")
+# The preparation of the Stats.py file
+#if os.path.getsize("stats.py") == 0:
+#    with open("stats.py", "w") as f:
+#        f.write("Wins = 0\n")
+#        f.write("Looses = 0\n")
 
 
 # the menu
@@ -309,8 +355,17 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
         print("[5] Exit")
         firstChoice = input("1/2/3/4/5 ")
     elif firstChoice == "3":
-        with open("stats.txt", "r") as f:
-             print(f.read())
+        print("This feature is not done yet. Come back another time :)")
+        #with open("stats.py", "r") as f:
+       #      print(f.read())
+        input("enter to go back to main menu ")
+        print(" ")
+        print("[1] Play")
+        print("[2] Tutorial")
+        print("[3] Stats")
+        print("[4] Credits")
+        print("[5] Exit")
+        firstChoice = input("1/2/3/4/5 ")
     elif firstChoice == "4":
         print("Eleseus")
         print("DVillablanca")
