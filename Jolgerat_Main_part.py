@@ -12,9 +12,9 @@ demon = ["Demon",15,10,"creature"]
 prince = ["Prince",7,7,"creature"]
 crow = ["Crow",5,3,"creature"]
 skeleton = ["Skeleton",10,5,"creature"]
-# The spells (0:names,1:class)
+# The spells (0:names,1:placeholder,2:placeholder,3:class)
 joker = ["Joker","","","spell"]
-sacrifice_shield = ["Sacrifice shield","","","spell"]
+sacrifice_shield = ["Sacrifice Shield","","","spell"]
 execution = ["Execution","","","spell"]
 smith = ["Smith","","","spell"]
 trap = ["Trap","","","spell"]
@@ -108,7 +108,8 @@ choice = "default"
 fieldA = "default"
 fieldB = "default"
 spellA = "default"
-spellB = "default" # right now bots can't use spells so it's useless
+spellB = "default" # right now bots can't use spells so this variable is useless
+sac_decision = []
 
 # The functions for the spells
 def spell_smith():
@@ -121,12 +122,64 @@ def spell_joker():
     fieldA = "default"
     fieldB = "default"
     return fieldA,fieldB
-def spell_sacrifice_shield(): # To do
+def spell_sacrifice_shield1(): # To do
     global playerHealthA
+    global pHA
+    global sac_decision
+    global handA
+    global damage
+    if playerHealthA != pHA:
+        pHA = copy.copy(playerHealthA)
+    return playerHealthA,pHA
+def spell_sacrifice_shield2():
+    global playerHealthA
+    global pHA
+    global damage
+    global handA
+    if cardA1 == sacrifice_shield:
+        cardA1 = "default"
+        drawA()
+    elif cardA2 == sacrifice_shield:
+        cardA2 = "default"
+        drawA()
+    elif cardA3 == sacrifice_shield:
+        cardA3 = "default"
+        drawA()
+    if playerHealthA < pHA:
+        choice = input("You are about to take ",damage," damage! Do you want to play a Sacrifice Shield?[y/n] ")
+        if choice == "y":
+            if cardA1[3] == "creature"or cardA1[3] == "creatureE":
+                sac_decision.append("[1]",cardA1[0:3])
+            elif cardA1[3] != "creature"or cardA1[3] == "creatureE":
+                sac_decision.append("[/]","")
+            if cardA2[3] == "creature"or cardA1[3] == "creatureE":
+                sac_decision.append("[2]",cardA2[0:3])
+            elif cardA2[3] != "creature"or cardA1[3] == "creatureE":
+                sac_decision.append("[/]","")
+            if cardA3[3] == "creature"or cardA1[3] == "creatureE":
+                sac_decision.append("[3]",cardA3[0:3])
+            elif cardA3[3] != "creature"or cardA1[3] == "creatureE":
+                sac_decision.append("[/]","")
+            print(sac_decision)
+            sacrifice = input("(",sac_decision[0],sac_decision[2],sac_decision[4],")")
+            if sacrifice == "1" and sac_decision[0] != "[/]":
+                damage -= cardA1
+                damage2 = copy.copy(damage) #to do
+                if damage <= 0:
+                    damage = 0
+                print("Your",sac_decision,)
+            elif sac_decision[0] == "[/]":
+                print("You can't sacrifice that card")
+    return damage, pHA, playerHealthA, handA
+
+
 def spell_execution():
     global fieldA
+    global handA
+    global handB
     fieldA = "default"
-    return fieldA
+    cardSelection(handA, handB)
+    return fieldA,handA,fieldB
 def spell_trap():
     global fieldB
     global trap
@@ -150,6 +203,7 @@ def spell_trap():
 
     return fieldA, fieldB, spellA
 
+# def spellcasting #this will remove spells from the hand and do other things like that
 
 # This is where the cards get selected
 def cardSelection(handA, handB):
@@ -219,12 +273,13 @@ strengthB=0
 damage=0
 playerHealthA = 20
 playerHealthB = 20
+pHA = 0
 s1=0
 s2=0
 s3=0
 s4=0
 
-# this function does all the mathmatical stuff for the fights between the creatures
+# this function does all the mathmatical stuff for the fights between the creatures ant it lowers the player health if it should get lower
 def fight():
     global fieldA
     global fieldB
