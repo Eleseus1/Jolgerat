@@ -14,7 +14,7 @@ crow = ["Crow",5,3,"creature"]
 skeleton = ["Skeleton",10,5,"creature"]
 # The spells (0:names,1:placeholder,2:placeholder,3:class)
 joker = ["Joker","","","spell"]
-sacrifice_shield = ["Sacrifice Shield","","","spell"]
+sacrifice_shield = ["Sacrifice Shield","","","spellspecial"]
 execution = ["Execution","","","spell"]
 smith = ["Smith","","","spell"]
 trap = ["Trap","","","spell"]
@@ -25,7 +25,7 @@ deckA = [
     joker, sacrifice_shield, sacrifice_shield, sacrifice_shield, execution, execution, execution, smith, smith, smith, trap, trap
     ]
 deckB = copy.deepcopy(deckA)
-deckB = [card for card in deckB if card[3] != "spell"]
+deckB = [card for card in deckB if card[3] != "spell" and card[3] != "spellspecial"]
 cardA1 = "default"
 cardA2 = "default"
 cardA3 = "default"
@@ -52,7 +52,19 @@ def drawA():
         deckA.remove(cardA3)
 
     handA = [cardA1, cardA2, cardA3]
-
+    if cardA1[3] != "creature" and cardA1[3] != "creatureE" and cardA2[3] != "creature" and cardA2[3] != "creatureE" and cardA3[3] != "creature" and cardA3[3] != "creatureE":
+        print("You have no creature, select a card to discard")
+        print("[1]",cardA1[0],"[2]",cardA2[0],"[3]",cardA3[0])
+        discard_choice = input("(1/2/3) ")
+        if discard_choice == "1":
+            cardA1 = "default"
+            drawA()
+        elif discard_choice == "2":
+            cardA2 = "default"
+            drawA()
+        elif discard_choice == "3":
+            cardA3 = "default"
+            drawA()
     return cardA1, cardA2, cardA3, deckA, handA
 
 
@@ -105,25 +117,31 @@ def roll():
 cardA = "default"
 cardB = "default"
 choice = "default"
-fieldA = "default"
-fieldB = "default"
+creatureA = "default"
+creatureB = "default"
 spellA = "default"
 spellB = "default" # right now bots can't use spells so this variable is useless
 sac_decision = []
 text = "default"
+creature_selection = []
+spell_selection =  []
+spell_choice = "default"
 
 # The functions for the spells
 def spell_smith():
-    global fieldA
-    fieldA[1] += 5
-    return fieldA
+    global creatureA
+    creatureA[1] += 5
+    print(f"Your {creatureA[0]} now has {creatureA[1]} strength")
+    return creatureA
 def spell_joker():
-    global fieldA
-    global fieldB
-    fieldA = "default"
-    fieldB = "default"
-    return fieldA,fieldB
-def spell_sacrifice_shield1(): # To do
+    global creatureA
+    global creatureB
+    creatureA = "default"
+    creatureB = "default"
+    cardSelection(handA,handB)
+    print("The field is empty now")
+    return creatureA,creatureB
+def spell_sacrifice_shield1(): 
     global playerHealthA
     global pHA
     global sac_decision
@@ -160,21 +178,21 @@ def spell_sacrifice_shield2():
             if cardA1[3] == "creature" or cardA1[3] == "creatureE":
                 sac_decision.append("[1]")
                 sac_decision.append(cardA1[0:3])
-            elif cardA1[3] != "creature" or cardA1[3] == "creatureE":
+            elif cardA1[3] != "creature" or cardA1[3] != "creatureE":
                 sac_decision.append("[/]")
                 sac_decision.append("")
 
             if cardA2[3] == "creature" or cardA2[3] == "creatureE":
                 sac_decision.append("[2]")
                 sac_decision.append(cardA2[0:3])
-            elif cardA2[3] != "creature" or cardA2[3] == "creatureE":
+            elif cardA2[3] != "creature" or cardA2[3] != "creatureE":
                 sac_decision.append("[/]")
                 sac_decision.append("")
 
             if cardA3[3] == "creature" or cardA3[3] == "creatureE":
                 sac_decision.append("[3]")
                 sac_decision.append(cardA3[0:3])
-            elif cardA3[3] != "creature" or cardA3[3] == "creatureE":
+            elif cardA3[3] != "creature" or cardA3[3] != "creatureE":
                 sac_decision.append("[/]")
                 sac_decision.append("")
 
@@ -219,78 +237,127 @@ def spell_sacrifice_shield2():
                     print("You can't sacrifice that card")
                 else:
                     print("Please select a creature to sacrifice")
+    sac_decision = []
     return damage, pHA, playerHealthA, handA, cardA1, cardA2, cardA3, damageaverted, text
-
-
-
-
 def spell_execution():
-    global fieldA
+    global creatureA
     global handA
     global handB
-    fieldA = "default"
+    print(f"Your {creatureA[0]} was executed")
+    creatureA = "default"
     cardSelection(handA, handB)
-    return fieldA,handA,fieldB
+    return creatureA,handA,creatureB
 def spell_trap():
-    global fieldB
+    global creatureB
     global trap
     global spellA
 
-    if spellA == "default":
-        spellA = trap
+    if creatureB != "default":
+        creatureB[1] -= 5
+        creatureB[2] -= 5
+        if creatureB[2] > 0:
+            print(f"Your enemys {creatureB[0]} has {creatureB[1]} strength and {creatureB[2]} health left")
+        elif creatureB[2] <= 0:
+            print(f"Your enemys {creatureB[0]} is dead because of your Trap")
+    if creatureB == "default":
+        print("You can't play a trap now")
 
-    if fieldB != "default":
-        fieldBempty = False
-    elif fieldB == "default":
-        fieldBempty = True
-    elif spellA != "default":
-        print("You can't play a Trap now")
+    return creatureB, spellA
 
-    if fieldBempty:
-        if fieldB == "default": 
-            fieldA[1] -= 5
-            fieldA[2] -= 5
-            spellA = "default"
-
-    return fieldA, fieldB, spellA
-
-# def spellcasting #this will remove spells from the hand and do other things like that
+# This function checks wich spell has to be executed and executes it
+def spellcasting(card):
+    global creatureA
+    global creatureB
+    global spellA
+    global spellB
+    global cardA1
+    global cardA2
+    global cardA3
+    if card[0] == "Smith":
+        spell_smith()
+    elif card[0] == "Joker":
+        spell_joker()
+    elif card[0] == "Execution":
+        spell_execution()
+    elif card[0] == "Trap":
+        spell_trap()
+    return card
 
 # This is where the cards get selected
 def cardSelection(handA, handB):
     global cardA
     global cardB  
     global choice
-    global fieldA
-    global fieldB
+    global spell_choice
+    global creatureA
+    global creatureB
+    global spellA
+    global spellB
+    global cardA1
+    global cardA2
+    global cardA3
+    global creature_selection
+    global spell_selection
 
-    if fieldB == "default":
+    if creatureB == "default":
         cardB = copy.deepcopy(random.choice(handB))
-        fieldB = cardB
-    if fieldA == "default":
-        print("[1]", cardA1[0], cardA1[1], cardA1[2], "[2]", cardA2[0], cardA2[1], cardA2[2], "[3]", cardA3[0], cardA3[1], cardA3[2])
+        creatureB = cardB
+    if cardA1[3] == "creature" or cardA1 == "creatureE":
+        creature_selection.append("([1]")
+        creature_selection.append(cardA1[0])
+        creature_selection.append(cardA1[1])
+        creature_selection.append(cardA1[2])
+        creature_selection.append(")")
+    elif cardA1[3] != "creature" or cardA1 != "creatureE":
+        creature_selection.append("([/]")
+        creature_selection.append(cardA1[0])
+        creature_selection.append(")")
+    if cardA2[3] == "creature" or cardA2 == "creatureE":
+        creature_selection.append("([2]")
+        creature_selection.append(cardA2[0])
+        creature_selection.append(cardA2[1])
+        creature_selection.append(cardA2[2])
+        creature_selection.append(")")
+    elif cardA2[3] != "creature" or cardA2 != "creatureE":
+        creature_selection.append("([/]")
+        creature_selection.append(cardA2[0])
+        creature_selection.append(")")
+    if cardA3[3] == "creature" or cardA3 == "creatureE":
+        creature_selection.append("([3]")
+        creature_selection.append(cardA3[0])
+        creature_selection.append(cardA3[1])
+        creature_selection.append(cardA3[2])
+        creature_selection.append(")")
+    elif cardA3[3] != "creature" or cardA3 != "creatureE":
+        creature_selection.append("([/]")
+        creature_selection.append(cardA3[0])
+        creature_selection.append(")")
+    if creatureA == "default":
+        # field_selection = ("[1]", cardA1[0], cardA1[1], cardA1[2], "[2]",cardA2[0], cardA2[1], cardA2[2], "[3]", cardA3[0], cardA3[1], cardA3[2])
+        print(creature_selection)
         while choice != "1" or "2" or "3":
-            choice = input(str("Select a card (1/2/3): "))
-            if choice == "1":
+            choice = input(str("Select a creature (1/2/3): "))
+            if choice == "1" and cardA1[3] != "spell":
                 cardA = copy.deepcopy(handA[0])
-                fieldA = cardA
+                creatureA = cardA
                 choice = "0"
                 break
-            elif choice == "2":
+            elif choice == "2" and cardA2[3] != "spell":
                 cardA = copy.deepcopy(handA[1])
                 choice = "0"
-                fieldA = cardA
+                creatureA = cardA
                 break
-            elif choice == "3":
+            elif choice == "3" and cardA3[3] != "spell":
                 cardA = copy.deepcopy(handA[2])
-                fieldA = cardA
+                creatureA = cardA
                 choice = "0"
                 break
             else:
-                print("please select a card")
-    return cardA, choice, cardB, fieldA, fieldB
+                print("please select a creature")
+    creature_selection = []
+    return cardA, choice, cardB, creatureA, creatureB, creature_selection, spell_selection, spellA, spellB
 
-
+# This function removes cards from the hands # to do
 def removeFromHand():
     global cardA
     global cardB
@@ -307,16 +374,23 @@ def removeFromHand():
 
     if cardA == cardA1:
         cardA1 = "default"
+        drawA()
     elif cardA == cardA2:
         cardA2 = "default"
+        drawA()
     elif cardA == cardA3:
         cardA3 = "default"
+        drawA()
     elif cardB == cardB1:
         cardB1 = "default"
+        drawB()
     elif cardB == cardB2:
         cardB2 = "default"
+        drawB()
     elif cardB == cardB3:
         cardB3 = "default"
+        drawB()
+    
     return cardA1,cardA2,cardA3,cardB1,cardB2,cardB3,cardA,cardB,handB,handA,deckA,deckB
 
 strenghA=0
@@ -333,8 +407,8 @@ damageaverted = 0
 
 # this function does all the mathmatical stuff for the fights between the creatures ant it lowers the player health if it should get lower
 def fight():
-    global fieldA
-    global fieldB
+    global creatureA
+    global creatureB
     global strenghA
     global strenghB
     global damage
@@ -346,30 +420,94 @@ def fight():
     global s4
     global damageaverted
     global text
+    global spell_choice
+    global spellA
+    global spellB
+    global cardA1
+    global cardA2
+    global cardA3
+    global spell_selection
+    global cardA
+    drawA()
+    drawB()
+    if spellA == "default":
+        while creatureB[3] != "default": 
+            if cardA1[3] == "spell":
+                spell_selection.append("([1]")
+                spell_selection.append(cardA1[0])
+                spell_selection.append(")")
+            elif cardA1[3] != "spell":
+                spell_selection.append("([/]")
+                spell_selection.append(cardA1[0])
+                spell_selection.append(")")
+            if cardA2[3] == "spell":
+                spell_selection.append("([2]")
+                spell_selection.append(cardA2[0])
+                spell_selection.append(")")
+            elif cardA2[3] != "spell":
+                spell_selection.append("([/]")
+                spell_selection.append(cardA2[0])
+                spell_selection.append(")")
+            if cardA3[3] == "spell":
+                spell_selection.append("([3]")
+                spell_selection.append(cardA3[0])
+                spell_selection.append(")")
+            elif cardA3[3] != "spell":
+                spell_selection.append("([/]")
+                spell_selection.append(cardA3[0])
+                spell_selection.append(")")
+            if cardA1[3] == "spell" or cardA2[3] == "spell" or cardA3[3] == "spell":
+                print(spell_selection)
+                spell_choice = input("Select a spell. Enter for no spell ")
+                if spell_choice == "1" and cardA1[3] == "spell":
+                    spellA = cardA1
+                    spellcasting(cardA1)
+                    cardA = spellA
+                    removeFromHand()
+                    spellA = "default"
+                    break
+                elif spell_choice == "2" and cardA2[3] == "spell":
+                    spellA = cardA2
+                    spellcasting(cardA2)
+                    cardA = spellA
+                    removeFromHand()
+                    spellA = "default"
+                    break
+                elif spell_choice == "3" and cardA3[3] == "spell":
+                    spellA = cardA3
+                    spellcasting(cardA3)
+                    cardA = spellA
+                    removeFromHand()
+                    spellA = "default"
+                    break
+                else:
+                   break
+            else:
+                break
     print(input("enter to start fight"))
     roll()
-    s1=copy.copy(fieldA[1])
-    s2=copy.copy(fieldA[1])
-    s3=copy.copy(fieldB[1])
-    s4=copy.copy(fieldB[1])
-    strenghA = fieldA[1] + int(AdStrengthA)
-    strenghB = fieldB[1] + int(AdStrengthB)
+    s1=copy.copy(creatureA[1])
+    s2=copy.copy(creatureA[1])
+    s3=copy.copy(creatureB[1])
+    s4=copy.copy(creatureB[1])
+    strenghA = creatureA[1] + int(AdStrengthA)
+    strenghB = creatureB[1] + int(AdStrengthB)
     if strenghA > strenghB:
         damage=strenghA - strenghB
-        if damage > fieldB[2]:
-            damage = damage - fieldB[2]
-            fieldB[2]=0
+        if damage > creatureB[2]:
+            damage = damage - creatureB[2]
+            creatureB[2]=0
             playerHealthB = playerHealthB - damage
             print("Your creature wins and inflicts",damage,"damage to your enemy")
             print("Your enemy has",playerHealthB,"left")
         else:
-            fieldB[2] = fieldB[2] - damage
+            creatureB[2] = creatureB[2] - damage
             print("Your creature wins and inflicts",damage,"damage")
     elif strenghA < strenghB:
         damage=strenghB - strenghA
-        if damage > fieldA[2]:
-            damage = damage - fieldA[2]
-            fieldA[2]=0
+        if damage > creatureA[2]:
+            damage = damage - creatureA[2]
+            creatureA[2]=0
             spell_sacrifice_shield1()
             playerHealthA = playerHealthA - damage
             spell_sacrifice_shield2()
@@ -379,26 +517,26 @@ def fight():
             print("Your enemys creature wins and inflicts",damage,"damage to you")
             print("You have",playerHealthA," health left")
         else:
-            fieldA[2] = fieldA[2]- damage
+            creatureA[2] = creatureA[2]- damage
             print("Your enemys creature wins and inflicts",damage,"damage")
     elif strenghA == strenghB:
         print("Draw")
 
-    fieldA[1] = s2 - s3
-    fieldB[1] = s4 - s1
-    s1=copy.copy(fieldA[1])
-    s2=copy.copy(fieldA[1])
-    s3=copy.copy(fieldB[1])
-    s4=copy.copy(fieldB[1])
+    creatureA[1] = s2 - s3
+    creatureB[1] = s4 - s1
+    s1=copy.copy(creatureA[1])
+    s2=copy.copy(creatureA[1])
+    s3=copy.copy(creatureB[1])
+    s4=copy.copy(creatureB[1])
 
-    if fieldA[1] < 1:
-        fieldA[1]= 1
-    if fieldB[1] < 1:
-        fieldB[1]= 1
+    if creatureA[1] < 1:
+        creatureA[1]= 1
+    if creatureB[1] < 1:
+        creatureB[1]= 1
+    spell_selection = []
+    return creatureA, creatureB, damage, playerHealthA, playerHealthB, damageaverted, spell_choice, spellA, spellB, cardA1, cardA2, cardA3 , spell_selection
 
-    return fieldA, fieldB, damage, playerHealthA, playerHealthB, damageaverted
-
-# this function checks if a creature or the player is dead, and it tracks the looses and the wins
+# These functions check if a creature or the player is dead, and it tracks the looses and the wins
 def check1():
     global playerHealthA
     global playerHealthB
@@ -412,15 +550,15 @@ def check1():
         print("You win!")
     
 def check2():
-    global fieldA
-    global fieldB
-    if fieldA[2] <= 0:
-        print("Your",fieldA[0] + "  is dead")
-        fieldA= "default"
-    elif fieldB[2] <= 0:
-        print("Your enemys",fieldB[0] + " is dead")
-        fieldB= "default"
-    return fieldA,fieldB
+    global creatureA
+    global creatureB
+    if creatureA[2] <= 0:
+        print("Your",creatureA[0] + "  is dead")
+        creatureA= "default"
+    elif creatureB[2] <= 0:
+        print("Your enemys",creatureB[0] + " is dead")
+        creatureB= "default"
+    return creatureA,creatureB
 
 # The preparation of the Stats.py file
 #if os.path.getsize("stats.py") == 0:
@@ -446,8 +584,8 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
             drawB()
             cardSelection(handA,handB)
             removeFromHand()
-            print("You:",fieldA[0],"S:",fieldA[1],"H:",fieldA[2])
-            print("Enemy:",fieldB[0],"S:",fieldB[1],"H:",fieldB[2])
+            print("You:",creatureA[0],"S:",creatureA[1],"H:",creatureA[2])
+            print("Enemy:",creatureB[0],"S:",creatureB[1],"H:",creatureB[2])
             fight()
             check2()
             check1()
@@ -508,7 +646,7 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
 #drawA()
 #drawB()
 #cardSelection(handA,handB)
-#print("Your card: ",fieldA[0],"S:",fieldA[1],"H:",fieldA[3])
+#print("Your card: ",fieldA[0],"S:",fieldA[1],"H:" fieldA[3])
 #print("Opponents card",fieldB[0],"S:",fieldB[2],"H:",fieldB[3])
 #removeFromHand()
 #fight(fieldA,fieldB)
