@@ -3,6 +3,9 @@ import copy
 import sys
 import os
 import pathlib
+# To do:
+# Stats tab
+# Make the selection look better
 
 test = os.getcwd()
 print(test+"/Jolgerat/stats.py")
@@ -109,8 +112,6 @@ def roll():
 
     AdStrengthA = random.randint(1,6)
     AdStrengthB = random.randint(1,6)
-    print("Your Additional strength:",AdStrengthA)
-    print("Your enemys Additional strength",AdStrengthB)
     
     return AdStrengthA, AdStrengthB
 
@@ -138,8 +139,8 @@ def spell_joker():
     global creatureB
     creatureA = "default"
     creatureB = "default"
-    cardSelection(handA,handB)
     print("The field is empty now")
+    cardSelection(handA,handB)
     return creatureA,creatureB
 def spell_sacrifice_shield1(): 
     global playerHealthA
@@ -205,7 +206,7 @@ def spell_sacrifice_shield2():
                     damage -= cardA1[2]
                     if damage < 0:
                         damage = 0
-                    text = ("Your ", sac_decision[1], " saved you from ", str(damage2), " damage, you only lose " + str(damage) + " health")
+                    text = (f"Your {cardA1[0]} saved you from {damage2} damage, you only lose {damage} health")
                     print(text)
                     damageaverted = damage2 - damage
                     break
@@ -216,9 +217,7 @@ def spell_sacrifice_shield2():
                     damage = damage - cardA2[2]
                     if damage < 0:
                         damage = 0
-                    if damage2 < 0:
-                        damage2 = 0
-                    text = ("Your ", sac_decision[3], " saved you from ", str(damage2), " damage, you only lose " + str(damage) + " health")
+                    text = (f"Your {cardA2[0]} saved you from {damage2} damage, you only lose {damage} health")
                     print(text)
                     damageaverted = damage2 - damage
                     break
@@ -227,9 +226,7 @@ def spell_sacrifice_shield2():
                     damage -= cardA3[2]
                     if damage < 0:
                         damage = 0
-                    if damage2 < 0:
-                        damage2 = 0
-                    text = ("Your ", sac_decision[5], " saved you from ", str(damage2), " damage, you only lose " + str(damage) + " health")
+                    text = (f"Your {cardA3[0]} saved you from {damage2} damage, you only lose {damage} health")
                     print(text)
                     damageaverted = damage2 - damage
                     break
@@ -256,12 +253,16 @@ def spell_trap():
         creatureB[1] -= 5
         creatureB[2] -= 5
         if creatureB[2] > 0:
+            if creatureB[1] < 0:
+                creatureB[1] = 0
             print(f"Your enemys {creatureB[0]} has {creatureB[1]} strength and {creatureB[2]} health left")
         elif creatureB[2] <= 0:
+            creatureB[2] = 0
+            if creatureB[1] < 0:
+                creatureB[1] = 0
             print(f"Your enemys {creatureB[0]} is dead because of your Trap")
     if creatureB == "default":
         print("You can't play a trap now")
-
     return creatureB, spellA
 
 # This function checks wich spell has to be executed and executes it
@@ -393,7 +394,7 @@ def removeFromHand():
     
     return cardA1,cardA2,cardA3,cardB1,cardB2,cardB3,cardA,cardB,handB,handA,deckA,deckB
 
-strenghA=0
+strengthA=0
 strengthB=0
 damage=0
 playerHealthA = 20
@@ -409,15 +410,13 @@ damageaverted = 0
 def fight():
     global creatureA
     global creatureB
-    global strenghA
-    global strenghB
+    global strengthA
+    global strengthB
     global damage
     global playerHealthA
     global playerHealthB
     global s1
     global s2
-    global s3
-    global s4
     global damageaverted
     global text
     global spell_choice
@@ -458,7 +457,7 @@ def fight():
                 spell_selection.append(")")
             if cardA1[3] == "spell" or cardA2[3] == "spell" or cardA3[3] == "spell":
                 print(spell_selection)
-                spell_choice = input("Select a spell. Enter for no spell ")
+                spell_choice = input("Select a spell(1/2/3). Enter for no spell ")
                 if spell_choice == "1" and cardA1[3] == "spell":
                     spellA = cardA1
                     spellcasting(cardA1)
@@ -487,24 +486,25 @@ def fight():
     print(input("enter to start fight"))
     roll()
     s1=copy.copy(creatureA[1])
-    s2=copy.copy(creatureA[1])
-    s3=copy.copy(creatureB[1])
-    s4=copy.copy(creatureB[1])
-    strenghA = creatureA[1] + int(AdStrengthA)
-    strenghB = creatureB[1] + int(AdStrengthB)
-    if strenghA > strenghB:
-        damage=strenghA - strenghB
+    s2=copy.copy(creatureB[1])
+    print(f"Round {rounds}")
+    print("Your Additional strength:",AdStrengthA)
+    print("Your enemys Additional strength",AdStrengthB)
+    strengthA = creatureA[1] + int(AdStrengthA)
+    strengthB = creatureB[1] + int(AdStrengthB)
+    if strengthA > strengthB:
+        damage=strengthA - strengthB
         if damage > creatureB[2]:
             damage = damage - creatureB[2]
             creatureB[2]=0
             playerHealthB = playerHealthB - damage
-            print("Your creature wins and inflicts",damage,"damage to your enemy")
+            print(f"Your creature wins with {strengthA} strenght against {strengthB} strength and inflicts {damage} damage to your enemy")
             print("Your enemy has",playerHealthB,"left")
         else:
             creatureB[2] = creatureB[2] - damage
-            print("Your creature wins and inflicts",damage,"damage")
-    elif strenghA < strenghB:
-        damage=strenghB - strenghA
+            print(f"Your creature wins with {strengthA} strenght against {strengthB} and inflicts {damage} damage to your enemys creature")
+    elif strengthA < strengthB:
+        damage=strengthB - strengthA
         if damage > creatureA[2]:
             damage = damage - creatureA[2]
             creatureA[2]=0
@@ -514,27 +514,16 @@ def fight():
             playerHealthA = playerHealthA + damageaverted
             damageaverted = 0
             text = "default"
-            print("Your enemys creature wins and inflicts",damage,"damage to you")
+            print(f"Your enemys creature wins with {strengthB} strenght against {strengthA} strength and inflicts {damage} damage to you")
             print("You have",playerHealthA," health left")
         else:
             creatureA[2] = creatureA[2]- damage
-            print("Your enemys creature wins and inflicts",damage,"damage")
-    elif strenghA == strenghB:
+            print(f"Your enemys creature wins with {strengthB} strenght against {strengthA} strength and inflicts {damage} damage to your creature")
+    elif strengthA == strengthB:
         print("Draw")
 
-    creatureA[1] = s2 - s3
-    creatureB[1] = s4 - s1
-    s1=copy.copy(creatureA[1])
-    s2=copy.copy(creatureA[1])
-    s3=copy.copy(creatureB[1])
-    s4=copy.copy(creatureB[1])
-
-    if creatureA[1] < 1:
-        creatureA[1]= 1
-    if creatureB[1] < 1:
-        creatureB[1]= 1
     spell_selection = []
-    return creatureA, creatureB, damage, playerHealthA, playerHealthB, damageaverted, spell_choice, spellA, spellB, cardA1, cardA2, cardA3 , spell_selection
+    return creatureA, creatureB, damage, playerHealthA, playerHealthB, damageaverted, spell_choice, spellA, spellB, cardA1, cardA2, cardA3 , spell_selection,
 
 # These functions check if a creature or the player is dead, and it tracks the looses and the wins
 def check1():
@@ -558,7 +547,32 @@ def check2():
     elif creatureB[2] <= 0:
         print("Your enemys",creatureB[0] + " is dead")
         creatureB= "default"
-    return creatureA,creatureB
+    return creatureA,creatureB, rounds
+
+rounds = 2
+firstround = 1
+counter = 0
+# This countes the played rounds
+def rounds_count():
+    global rounds
+    rounds += 1
+    return rounds
+
+# This lowers the strength
+def strength_reduction():
+    global creatureA
+    global creatureB
+    global firstround
+
+    if firstround != 1:
+        creatureA[1] -= s2
+        creatureB[1] -= s1
+
+        if creatureA[1] < 1:
+            creatureA[1] = 1
+        if creatureB[1] < 1:
+            creatureB[1] = 1
+
 
 # The preparation of the Stats.py file
 #if os.path.getsize("stats.py") == 0:
@@ -576,19 +590,26 @@ print("[3] Stats")
 print("[4] Credits")
 print("[5] Exit")
 firstChoice = input("1/2/3/4/5 ")
+print("")
 while firstChoice == "1"or"2"or"3"or"4"or"5":
     if firstChoice == "1": # play
         # The core
         while playerHealthA > 0 and playerHealthB > 0:
             drawA() 
             drawB()
+            if firstround == 1:
+                print(f"Round {firstround}")
             cardSelection(handA,handB)
             removeFromHand()
+            strength_reduction()
             print("You:",creatureA[0],"S:",creatureA[1],"H:",creatureA[2])
             print("Enemy:",creatureB[0],"S:",creatureB[1],"H:",creatureB[2])
             fight()
             check2()
             check1()
+            rounds_count()
+            firstround = 2
+        print(" ")
         input("enter to go back to main menu ")
         print(" ")
         print("[1] Play")
@@ -597,6 +618,7 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
         print("[4] Credits")
         print("[5] Exit")
         firstChoice = input("1/2/3/4/5 ")
+        print("")
     elif firstChoice == "2": # Turtorial ; Update turtorial
         print("Each player draws three cards, then chooses one of the cards to play in the center.")
         print("As soon as he plays a card, he draws a new one.")
@@ -615,6 +637,7 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
         print("[4] Credits")
         print("[5] Exit")
         firstChoice = input("1/2/3/4/5 ")
+        print("")
     elif firstChoice == "3": # Stats 
         print("This feature is not done yet. Come back another time :)")
         #with open("stats.py", "r") as f:
@@ -627,6 +650,7 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
         print("[4] Credits")
         print("[5] Exit")
         firstChoice = input("1/2/3/4/5 ")
+        print("")
     elif firstChoice == "4": # Credits
         print("Eleseus")
         print("DVillablanca")
@@ -639,8 +663,19 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
         print("[4] Credits")
         print("[5] Exit")
         firstChoice = input("1/2/3/4/5 ")
+        print("")
     elif firstChoice == "5": # Exit 
-        sys.exit()
+        exitchoice = input("Do you want to exit the game?[y/n] ")
+        if exitchoice == "y":
+            sys.exit()
+        else:
+            print("[1] Play")
+            print("[2] Tutorial")
+            print("[3] Stats")
+            print("[4] Credits")
+            print("[5] Exit")
+            firstChoice = input("1/2/3/4/5 ")
+            print("")
 
 # I used this codeblock to test everything
 #drawA()
