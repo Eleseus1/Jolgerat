@@ -6,6 +6,7 @@ import pathlib
 # To do:
 # Stats tab
 # Make the selection look better
+# Make "enter to start fight" not appear if "Select a spell..." apeard
 
 test = os.getcwd()
 print(test+"/Jolgerat/stats.py")
@@ -248,6 +249,7 @@ def spell_trap():
     global creatureB
     global trap
     global spellA
+    global trapcounter
 
     if creatureB != "default":
         creatureB[1] -= 5
@@ -261,9 +263,12 @@ def spell_trap():
             if creatureB[1] < 0:
                 creatureB[1] = 0
             print(f"Your enemys {creatureB[0]} is dead because of your Trap")
-    if creatureB == "default":
+            trapcounter = 1
+            creatureB = "default"
+            cardSelection(handA,handB)
+    elif creatureB == "default":
         print("You can't play a trap now")
-    return creatureB, spellA
+    return creatureB, spellA, trapcounter
 
 # This function checks wich spell has to be executed and executes it
 def spellcasting(card):
@@ -299,6 +304,7 @@ def cardSelection(handA, handB):
     global cardA3
     global creature_selection
     global spell_selection
+    global counter
 
     if creatureB == "default":
         cardB = copy.deepcopy(random.choice(handB))
@@ -342,16 +348,19 @@ def cardSelection(handA, handB):
                 cardA = copy.deepcopy(handA[0])
                 creatureA = cardA
                 choice = "0"
+                counter = 1
                 break
             elif choice == "2" and cardA2[3] != "spell":
                 cardA = copy.deepcopy(handA[1])
                 choice = "0"
                 creatureA = cardA
+                counter = 1
                 break
             elif choice == "3" and cardA3[3] != "spell":
                 cardA = copy.deepcopy(handA[2])
                 creatureA = cardA
                 choice = "0"
+                counter = 1
                 break
             else:
                 print("please select a creature")
@@ -405,6 +414,8 @@ s2=0
 s3=0
 s4=0
 damageaverted = 0
+startfightcounter = 0
+trapcounter = 0
 
 # this function does all the mathmatical stuff for the fights between the creatures ant it lowers the player health if it should get lower
 def fight():
@@ -427,6 +438,7 @@ def fight():
     global cardA3
     global spell_selection
     global cardA
+    global startfightcounter
     drawA()
     drawB()
     if spellA == "default":
@@ -457,7 +469,8 @@ def fight():
                 spell_selection.append(")")
             if cardA1[3] == "spell" or cardA2[3] == "spell" or cardA3[3] == "spell":
                 print(spell_selection)
-                spell_choice = input("Select a spell(1/2/3). Enter for no spell ")
+                spell_choice = input("Select a spell(1/2/3). enter to start fight and to skip spell selection ")
+                startfightcounter = 1
                 if spell_choice == "1" and cardA1[3] == "spell":
                     spellA = cardA1
                     spellcasting(cardA1)
@@ -483,10 +496,13 @@ def fight():
                    break
             else:
                 break
-    print(input("enter to start fight"))
+    if startfightcounter == 0:
+        print(input("enter to start fight "))
+    startfightcounter = 0
     roll()
     s1=copy.copy(creatureA[1])
     s2=copy.copy(creatureB[1])
+    print("")
     print(f"Round {rounds}")
     print("Your Additional strength:",AdStrengthA)
     print("Your enemys Additional strength",AdStrengthB)
@@ -521,7 +537,6 @@ def fight():
             print(f"Your enemys creature wins with {strengthB} strenght against {strengthA} strength and inflicts {damage} damage to your creature")
     elif strengthA == strengthB:
         print("Draw")
-
     spell_selection = []
     return creatureA, creatureB, damage, playerHealthA, playerHealthB, damageaverted, spell_choice, spellA, spellB, cardA1, cardA2, cardA3 , spell_selection,
 
@@ -541,13 +556,15 @@ def check1():
 def check2():
     global creatureA
     global creatureB
+    global trapcounter
     if creatureA[2] <= 0:
         print("Your",creatureA[0] + "  is dead")
         creatureA= "default"
-    elif creatureB[2] <= 0:
+    elif creatureB[2] <= 0 and trapcounter != 1:
         print("Your enemys",creatureB[0] + " is dead")
         creatureB= "default"
-    return creatureA,creatureB, rounds
+    trapcounter = 0
+    return creatureA,creatureB, rounds, trapcounter
 
 rounds = 2
 firstround = 1
@@ -562,9 +579,12 @@ def rounds_count():
 def strength_reduction():
     global creatureA
     global creatureB
-    global firstround
+    global counter
 
-    if firstround != 1:
+    s1=copy.copy(creatureA[1])
+    s2=copy.copy(creatureB[1])
+
+    if counter == 0:
         creatureA[1] -= s2
         creatureB[1] -= s1
 
@@ -572,6 +592,8 @@ def strength_reduction():
             creatureA[1] = 1
         if creatureB[1] < 1:
             creatureB[1] = 1
+    counter = 0 
+    return creatureA, creatureB, counter
 
 
 # The preparation of the Stats.py file
