@@ -6,7 +6,9 @@ import pathlib
 # To do:
 # Stats tab
 # Make the selection look better
-# Make "enter to start fight" not appear if "Select a spell..." apeard
+# Update turtorial
+# Effect creatures
+# Deck editor
 
 test = os.getcwd()
 print(test+"/Jolgerat/stats.py")
@@ -175,34 +177,30 @@ def spell_sacrifice_shield2():
                 cardA3 = "default"
                 drawA()
 
-            sac_decision = []
-
             if cardA1[3] == "creature" or cardA1[3] == "creatureE":
-                sac_decision.append("[1]")
-                sac_decision.append(cardA1[0:3])
+                sac_decision1 =("[1]")
+                sac_decision2 =(cardA1[0],cardA1[1],cardA1[2])
             elif cardA1[3] != "creature" or cardA1[3] != "creatureE":
-                sac_decision.append("[/]")
-                sac_decision.append("")
-
+                sac_decision1 =("[/]")
+                sac_decision2 =("")
             if cardA2[3] == "creature" or cardA2[3] == "creatureE":
-                sac_decision.append("[2]")
-                sac_decision.append(cardA2[0:3])
+                sac_decision3 =("[2]")
+                sac_decision4 =(cardA2[0],cardA2[1],cardA2[2])
             elif cardA2[3] != "creature" or cardA2[3] != "creatureE":
-                sac_decision.append("[/]")
-                sac_decision.append("")
-
+                sac_decision3 =("[/]")
+                sac_decision4 =("")
             if cardA3[3] == "creature" or cardA3[3] == "creatureE":
-                sac_decision.append("[3]")
-                sac_decision.append(cardA3[0:3])
+                sac_decision5 =("[3]")
+                sac_decision6 =(cardA3[0],cardA3[1],cardA3[2])
             elif cardA3[3] != "creature" or cardA3[3] != "creatureE":
-                sac_decision.append("[/]")
-                sac_decision.append("")
+                sac_decision5 =("[/]")
+                sac_decision6 =("")
 
-            print(sac_decision[0], sac_decision[1], sac_decision[2], sac_decision[3], sac_decision[4], sac_decision[5])
-            sacrifice = input("(" + sac_decision[0] + sac_decision[2] + sac_decision[4] + ") ")
+            print(sac_decision1, sac_decision2, sac_decision3, sac_decision4, sac_decision5, sac_decision6)
+            sacrifice = input("(" + sac_decision1 + sac_decision3 + sac_decision5 + ") ")
             
             while sacrifice != "1" or "2" or "3":
-                if sacrifice == "1" and sac_decision[0] != "[/]":
+                if sacrifice == "1" and sac_decision1 != "[/]":
                     damage2 = copy.copy(damage)
                     damage -= cardA1[2]
                     if damage < 0:
@@ -211,9 +209,10 @@ def spell_sacrifice_shield2():
                     print(text)
                     damageaverted = damage2 - damage
                     break
-                elif sacrifice == "2" and sac_decision[2] == "[/]":
+                elif sacrifice == "1" and sac_decision1 == "[/]":
                     print("You can't sacrifice that card")
-                elif sacrifice == "2" and sac_decision[2] != "[/]":
+                    break
+                elif sacrifice == "2" and sac_decision3 != "[/]":
                     damage2 = copy.copy(damage)
                     damage = damage - cardA2[2]
                     if damage < 0:
@@ -222,7 +221,10 @@ def spell_sacrifice_shield2():
                     print(text)
                     damageaverted = damage2 - damage
                     break
-                elif sacrifice == "3" and sac_decision[4] != "[/]":
+                elif sacrifice == "2" and sac_decision2 == "[/]":
+                    print("You can't sacrifice that card")
+                    break
+                elif sacrifice == "3" and sac_decision5 != "[/]":
                     damage2 = copy.copy(damage)
                     damage -= cardA3[2]
                     if damage < 0:
@@ -231,11 +233,11 @@ def spell_sacrifice_shield2():
                     print(text)
                     damageaverted = damage2 - damage
                     break
-                elif sacrifice == "3" and sac_decision[4] == "[/]":
+                elif sacrifice == "3" and sac_decision5 == "[/]":
                     print("You can't sacrifice that card")
+                    break
                 else:
                     print("Please select a creature to sacrifice")
-    sac_decision = []
     return damage, pHA, playerHealthA, handA, cardA1, cardA2, cardA3, damageaverted, text
 def spell_execution():
     global creatureA
@@ -302,7 +304,6 @@ def cardSelection(handA, handB):
     global cardA1
     global cardA2
     global cardA3
-    global creature_selection
     global spell_selection
     global counter
 
@@ -310,38 +311,44 @@ def cardSelection(handA, handB):
         cardB = copy.deepcopy(random.choice(handB))
         creatureB = cardB
     if cardA1[3] == "creature" or cardA1 == "creatureE":
-        creature_selection.append("([1]")
-        creature_selection.append(cardA1[0])
-        creature_selection.append(cardA1[1])
-        creature_selection.append(cardA1[2])
-        creature_selection.append(")")
+        creature_selection1 =("([1]")
+        n1 =(cardA1[0])
+        st1 = (cardA1[1])
+        h1 = (cardA1[2])
+        creature_selection3 =(")")
     elif cardA1[3] != "creature" or cardA1 != "creatureE":
-        creature_selection.append("([/]")
-        creature_selection.append(cardA1[0])
-        creature_selection.append(")")
+        creature_selection1 =("([/]")
+        n1 =(cardA1[0])
+        st1 = ""
+        h1 = ""
+        creature_selection3 =(")")
     if cardA2[3] == "creature" or cardA2 == "creatureE":
-        creature_selection.append("([2]")
-        creature_selection.append(cardA2[0])
-        creature_selection.append(cardA2[1])
-        creature_selection.append(cardA2[2])
-        creature_selection.append(")")
+        creature_selection4 =("([2]")
+        n2 =(cardA2[0])
+        st2 = (cardA2[1])
+        h2 = (cardA2[2])
+        creature_selection6 =(")")
     elif cardA2[3] != "creature" or cardA2 != "creatureE":
-        creature_selection.append("([/]")
-        creature_selection.append(cardA2[0])
-        creature_selection.append(")")
+        creature_selection4 =("([/]")
+        n2 =(cardA2[0])
+        st2 = ""
+        h2 = ""
+        creature_selection6 =(")")
     if cardA3[3] == "creature" or cardA3 == "creatureE":
-        creature_selection.append("([3]")
-        creature_selection.append(cardA3[0])
-        creature_selection.append(cardA3[1])
-        creature_selection.append(cardA3[2])
-        creature_selection.append(")")
+        creature_selection7 =("([3]")
+        n3 =(cardA3[0])
+        st3 = (cardA3[1])
+        h3 = (cardA3[2])
+        creature_selection9 =(")")
     elif cardA3[3] != "creature" or cardA3 != "creatureE":
-        creature_selection.append("([/]")
-        creature_selection.append(cardA3[0])
-        creature_selection.append(")")
+        creature_selection7 =("([/]")
+        n3 =(cardA3[0])
+        st3 = ""
+        h3 = ""
+        creature_selection9 =(")")
     if creatureA == "default":
         # field_selection = ("[1]", cardA1[0], cardA1[1], cardA1[2], "[2]",cardA2[0], cardA2[1], cardA2[2], "[3]", cardA3[0], cardA3[1], cardA3[2])
-        print(creature_selection)
+        print(creature_selection1,n1,st1,h1,creature_selection3,creature_selection4,n2,st2,h2,creature_selection6,creature_selection7,n3,st3,h3,creature_selection9)
         while choice != "1" or "2" or "3":
             choice = input(str("Select a creature (1/2/3): "))
             if choice == "1" and cardA1[3] != "spell":
@@ -364,8 +371,7 @@ def cardSelection(handA, handB):
                 break
             else:
                 print("please select a creature")
-    creature_selection = []
-    return cardA, choice, cardB, creatureA, creatureB, creature_selection, spell_selection, spellA, spellB
+    return cardA, choice, cardB, creatureA, creatureB, spell_selection, spellA, spellB
 
 # This function removes cards from the hands # to do
 def removeFromHand():
