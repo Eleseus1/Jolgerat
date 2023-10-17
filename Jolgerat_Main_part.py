@@ -134,7 +134,7 @@ spell_choice = "default"
 # The functions for the spells
 def spell_smith():
     global creatureA
-    creatureA[1] += 5
+    creatureA[1] = creatureA[1] + 5
     print(f"Your {creatureA[0]} now has {creatureA[1]} strength")
     return creatureA
 def spell_joker():
@@ -305,11 +305,14 @@ def cardSelection(handA, handB):
     global cardA2
     global cardA3
     global spell_selection
-    global counter
+    global counterA
+    global counterB
 
     if creatureB == "default":
         cardB = copy.deepcopy(random.choice(handB))
         creatureB = cardB
+        print(f"Your enemy delpoied a {creatureB[0]}")
+        counterB = 1
     if cardA1[3] == "creature" or cardA1 == "creatureE":
         creature_selection1 =("([1]")
         n1 =(cardA1[0])
@@ -355,23 +358,23 @@ def cardSelection(handA, handB):
                 cardA = copy.deepcopy(handA[0])
                 creatureA = cardA
                 choice = "0"
-                counter = 1
+                counterA = 1
                 break
             elif choice == "2" and cardA2[3] != "spell":
                 cardA = copy.deepcopy(handA[1])
                 choice = "0"
                 creatureA = cardA
-                counter = 1
+                counterA = 1
                 break
             elif choice == "3" and cardA3[3] != "spell":
                 cardA = copy.deepcopy(handA[2])
                 creatureA = cardA
                 choice = "0"
-                counter = 1
+                counterA = 1
                 break
             else:
                 print("please select a creature")
-    return cardA, choice, cardB, creatureA, creatureB, spell_selection, spellA, spellB
+    return cardA, choice, cardB, creatureA, creatureB, spell_selection, spellA, spellB, counterA, counterB
 
 # This function removes cards from the hands # to do
 def removeFromHand():
@@ -415,8 +418,8 @@ damage=0
 playerHealthA = 20
 playerHealthB = 20
 pHA = 0
-s1=0
-s2=0
+sA=0
+sB=0
 s3=0
 s4=0
 damageaverted = 0
@@ -432,8 +435,8 @@ def fight():
     global damage
     global playerHealthA
     global playerHealthB
-    global s1
-    global s2
+    global sA
+    global sB
     global damageaverted
     global text
     global spell_choice
@@ -506,8 +509,8 @@ def fight():
         print(input("enter to start fight "))
     startfightcounter = 0
     roll()
-    s1=copy.copy(creatureA[1])
-    s2=copy.copy(creatureB[1])
+    sA=copy.copy(creatureA[1])
+    sB=copy.copy(creatureB[1])
     print("")
     print(f"Round {rounds}")
     print("Your Additional strength:",AdStrengthA)
@@ -574,7 +577,7 @@ def check2():
 
 rounds = 2
 firstround = 1
-counter = 0
+counterA = 0
 # This countes the played rounds
 def rounds_count():
     global rounds
@@ -585,21 +588,32 @@ def rounds_count():
 def strength_reduction():
     global creatureA
     global creatureB
-    global counter
+    global counterA
+    global counterB
 
-    s1=copy.copy(creatureA[1])
-    s2=copy.copy(creatureB[1])
+    sA=copy.copy(creatureA[1])
+    sB=copy.copy(creatureB[1])
 
-    if counter == 0:
-        creatureA[1] -= s2
-        creatureB[1] -= s1
+    if counterA == 0:
+        creatureA[1] -= sB
+        creatureB[1] -= sA
 
         if creatureA[1] < 1:
             creatureA[1] = 1
         if creatureB[1] < 1:
             creatureB[1] = 1
-    counter = 0 
-    return creatureA, creatureB, counter
+    if counterB == 0:
+        creatureB[1] -= sA
+        creatureA[1] -= sB
+
+        if creatureA[1] < 1:
+            creatureA[1] = 1
+        if creatureB[1] < 1:
+            creatureB[1] = 1
+    
+    counterA = 0 
+    counterB = 0
+    return creatureA, creatureB, counterA, counterB
 
 
 # The preparation of the Stats.py file
