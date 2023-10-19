@@ -10,8 +10,9 @@ import pathlib
 # Effect creatures
 # Deck editor
 
-test = os.getcwd()
-print(test+"/Jolgerat/stats.py")
+#test = os.getcwd()
+#print(test+"/Jolgerat/stats.py")
+
 # The creatures (0:names,1:strength,2:health,3:class)
 knight = ["Knight",6,12,"creature"]
 demon = ["Demon",15,10,"creature"]
@@ -243,10 +244,20 @@ def spell_execution():
     global creatureA
     global handA
     global handB
+    global cardA1
+    global cardA2
+    global cardA3
     print(f"Your {creatureA[0]} was executed")
     creatureA = "default"
+    if cardA1[0] == "Execution":
+        cardA1 = "default"
+    elif cardA2[0] == "Execution":
+        cardA2 = "default"
+    elif cardA3[0] == "Execution":
+        cardA3 = "default"
+    drawA()
     cardSelection(handA, handB)
-    return creatureA,handA,creatureB
+    return creatureA, handA, creatureB
 def spell_trap():
     global creatureB
     global trap
@@ -311,7 +322,8 @@ def cardSelection(handA, handB):
     if creatureB == "default":
         cardB = copy.deepcopy(random.choice(handB))
         creatureB = cardB
-        print(f"Your enemy delpoied a {creatureB[0]}")
+        if firstround != 1:
+            print(f"Your enemy delpoied a {creatureB[0]}")
         counterB = 1
     if cardA1[3] == "creature" or cardA1 == "creatureE":
         creature_selection1 =("([1]")
@@ -319,41 +331,47 @@ def cardSelection(handA, handB):
         st1 = (cardA1[1])
         h1 = (cardA1[2])
         creature_selection3 =(")")
+        choice1 = "1"
     elif cardA1[3] != "creature" or cardA1 != "creatureE":
         creature_selection1 =("([/]")
         n1 =(cardA1[0])
         st1 = ""
         h1 = ""
         creature_selection3 =(")")
+        choice1 = "/"
     if cardA2[3] == "creature" or cardA2 == "creatureE":
         creature_selection4 =("([2]")
         n2 =(cardA2[0])
         st2 = (cardA2[1])
         h2 = (cardA2[2])
         creature_selection6 =(")")
+        choice2 = "2"
     elif cardA2[3] != "creature" or cardA2 != "creatureE":
         creature_selection4 =("([/]")
         n2 =(cardA2[0])
         st2 = ""
         h2 = ""
         creature_selection6 =(")")
+        choice2 = "/"
     if cardA3[3] == "creature" or cardA3 == "creatureE":
         creature_selection7 =("([3]")
         n3 =(cardA3[0])
         st3 = (cardA3[1])
         h3 = (cardA3[2])
         creature_selection9 =(")")
+        choice3 = "3"
     elif cardA3[3] != "creature" or cardA3 != "creatureE":
         creature_selection7 =("([/]")
         n3 =(cardA3[0])
         st3 = ""
         h3 = ""
         creature_selection9 =(")")
+        choice3 = "/"
     if creatureA == "default":
         # field_selection = ("[1]", cardA1[0], cardA1[1], cardA1[2], "[2]",cardA2[0], cardA2[1], cardA2[2], "[3]", cardA3[0], cardA3[1], cardA3[2])
         print(creature_selection1,n1,st1,h1,creature_selection3,creature_selection4,n2,st2,h2,creature_selection6,creature_selection7,n3,st3,h3,creature_selection9)
         while choice != "1" or "2" or "3":
-            choice = input(str("Select a creature (1/2/3): "))
+            choice = input(f"Select a creature ({choice1}|{choice2}|{choice3}): ")
             if choice == "1" and cardA1[3] != "spell":
                 cardA = copy.deepcopy(handA[0])
                 creatureA = cardA
@@ -453,32 +471,38 @@ def fight():
     if spellA == "default":
         while creatureB[3] != "default": 
             if cardA1[3] == "spell":
-                spell_selection.append("([1]")
-                spell_selection.append(cardA1[0])
-                spell_selection.append(")")
+                spell_selection1 = ("([1]")
+                spell_selection2 = (cardA1[0])
+                spell_selection3 = (")")
+                spell_choice1 = "1"
             elif cardA1[3] != "spell":
-                spell_selection.append("([/]")
-                spell_selection.append(cardA1[0])
-                spell_selection.append(")")
+                spell_selection1 = ("([/]")
+                spell_selection2 = (cardA1[0])
+                spell_selection3 = (")")
+                spell_choice1 = "/"
             if cardA2[3] == "spell":
-                spell_selection.append("([2]")
-                spell_selection.append(cardA2[0])
-                spell_selection.append(")")
+                spell_selection4 = ("([2]")
+                spell_selection5 = (cardA2[0])
+                spell_selection6 = (")")
+                spell_choice2 = "2"
             elif cardA2[3] != "spell":
-                spell_selection.append("([/]")
-                spell_selection.append(cardA2[0])
-                spell_selection.append(")")
+                spell_selection4 = ("([/]")
+                spell_selection5 = (cardA2[0])
+                spell_selection6 = (")")
+                spell_choice2 = "/"
             if cardA3[3] == "spell":
-                spell_selection.append("([3]")
-                spell_selection.append(cardA3[0])
-                spell_selection.append(")")
+                spell_selection7 = ("([3]")
+                spell_selection8 = (cardA3[0])
+                spell_selection9 = (")")
+                spell_choice3 = "3"
             elif cardA3[3] != "spell":
-                spell_selection.append("([/]")
-                spell_selection.append(cardA3[0])
-                spell_selection.append(")")
+                spell_selection7 = ("([/]")
+                spell_selection8 = (cardA3[0])
+                spell_selection9 = (")")
+                spell_choice3 = "/"
             if cardA1[3] == "spell" or cardA2[3] == "spell" or cardA3[3] == "spell":
-                print(spell_selection)
-                spell_choice = input("Select a spell(1/2/3). enter to start fight and to skip spell selection ")
+                print(spell_selection1,spell_selection2,spell_selection3,spell_selection4,spell_selection5,spell_selection6,spell_selection7,spell_selection8,spell_selection9)
+                spell_choice = input(f"Select a spell({spell_choice1}|{spell_choice2}|{spell_choice3}). enter to start fight and to skip spell selection ")
                 startfightcounter = 1
                 if spell_choice == "1" and cardA1[3] == "spell":
                     spellA = cardA1
