@@ -3,7 +3,6 @@ import copy
 import sys
 
 # To do:
-# Split the code
 # fix strength reduction AGAIN
 # Effect creatures
 # Deck editor
@@ -140,7 +139,8 @@ def spell_joker():
     creatureA = "default"
     creatureB = "default"
     print("The field is empty now")
-    cardSelection(handA,handB)
+    drawA()
+    creatureSelection(handA,handB)
     return creatureA,creatureB
 def spell_sacrifice_shield1(): 
     global playerHealthA
@@ -192,10 +192,8 @@ def spell_sacrifice_shield2():
             elif cardA3[3] != "creature" or cardA3[3] != "creatureE":
                 sac_decision5 =("[/]")
                 sac_decision6 =("")
-
             print(sac_decision1, sac_decision2, sac_decision3, sac_decision4, sac_decision5, sac_decision6)
             sacrifice = input("(" + sac_decision1 + sac_decision3 + sac_decision5 + ") ")
-            
             while sacrifice != "1" or "2" or "3":
                 if sacrifice == "1" and sac_decision1 != "[/]":
                     damage2 = copy.copy(damage)
@@ -205,6 +203,8 @@ def spell_sacrifice_shield2():
                     text = (f"Your {cardA1[0]} saved you from {damage2} damage, you only lose {damage} health")
                     print(text)
                     damageaverted = damage2 - damage
+                    if damageaverted > damage2:
+                        damageaverted = damage2
                     break
                 elif sacrifice == "1" and sac_decision1 == "[/]":
                     print("You can't sacrifice that card")
@@ -217,6 +217,8 @@ def spell_sacrifice_shield2():
                     text = (f"Your {cardA2[0]} saved you from {damage2} damage, you only lose {damage} health")
                     print(text)
                     damageaverted = damage2 - damage
+                    if damageaverted > damage2:
+                        damageaverted = damage2
                     break
                 elif sacrifice == "2" and sac_decision2 == "[/]":
                     print("You can't sacrifice that card")
@@ -229,6 +231,8 @@ def spell_sacrifice_shield2():
                     text = (f"Your {cardA3[0]} saved you from {damage2} damage, you only lose {damage} health")
                     print(text)
                     damageaverted = damage2 - damage
+                    if damageaverted > damage2:
+                        damageaverted = damage2
                     break
                 elif sacrifice == "3" and sac_decision5 == "[/]":
                     print("You can't sacrifice that card")
@@ -252,7 +256,7 @@ def spell_execution():
     elif cardA3[0] == "Execution":
         cardA3 = "default"
     drawA()
-    cardSelection(handA, handB)
+    creatureSelection(handA, handB)
     return creatureA, handA, creatureB
 def spell_trap():
     global creatureB
@@ -274,7 +278,7 @@ def spell_trap():
             print(f"Your enemys {creatureB[0]} is dead because of your Trap")
             trapcounter = 1
             creatureB = "default"
-            cardSelection(handA,handB)
+            creatureSelection(handA,handB)
     elif creatureB == "default":
         print("You can't play a trap now")
     return creatureB, spellA, trapcounter
@@ -299,7 +303,7 @@ def spellcasting(card):
     return card
 
 # This is where the cards get selected
-def cardSelection(handA, handB):
+def creatureSelection(handA, handB):
     global cardA
     global cardB  
     global choice
@@ -426,6 +430,85 @@ def removeFromHand():
     
     return cardA1,cardA2,cardA3,cardB1,cardB2,cardB3,cardA,cardB,handB,handA,deckA,deckB
 
+# This function allows the player to choose spells
+def spellSelection():
+        global creatureA
+        global creatureB
+        global damage
+        global damageaverted
+        global text
+        global spell_choice
+        global spellA
+        global spellB
+        global cardA1
+        global cardA2
+        global cardA3
+        global spell_selection
+        global cardA
+        global startfightcounter
+        if spellA == "default":
+            while creatureB[3] != "default": 
+                if cardA1[3] == "spell":
+                    spell_selection1 = ("([1]")
+                    spell_selection2 = (cardA1[0])
+                    spell_selection3 = (")")
+                    spell_choice1 = "1"
+                elif cardA1[3] != "spell":
+                    spell_selection1 = ("([/]")
+                    spell_selection2 = (cardA1[0])
+                    spell_selection3 = (")")
+                    spell_choice1 = "/"
+                if cardA2[3] == "spell":
+                    spell_selection4 = ("([2]")
+                    spell_selection5 = (cardA2[0])
+                    spell_selection6 = (")")
+                    spell_choice2 = "2"
+                elif cardA2[3] != "spell":
+                    spell_selection4 = ("([/]")
+                    spell_selection5 = (cardA2[0])
+                    spell_selection6 = (")")
+                    spell_choice2 = "/"
+                if cardA3[3] == "spell":
+                   spell_selection7 = ("([3]")
+                   spell_selection8 = (cardA3[0])
+                   spell_selection9 = (")")
+                   spell_choice3 = "3"
+                elif cardA3[3] != "spell":
+                    spell_selection7 = ("([/]")
+                    spell_selection8 = (cardA3[0])
+                    spell_selection9 = (")")
+                    spell_choice3 = "/"
+                if cardA1[3] == "spell" or cardA2[3] == "spell" or cardA3[3] == "spell":
+                    print(spell_selection1,spell_selection2,spell_selection3,spell_selection4,spell_selection5,spell_selection6,spell_selection7,spell_selection8,spell_selection9)
+                    spell_choice = input(f"Select a spell({spell_choice1}|{spell_choice2}|{spell_choice3})(Select nothing for no spell). enter to start fight ")
+                    startfightcounter = 1
+                    if spell_choice == "1" and cardA1[3] == "spell":
+                        spellA = cardA1
+                        spellcasting(cardA1)
+                        cardA = spellA
+                        removeFromHand()
+                        spellA = "default"
+                        break
+                    elif spell_choice == "2" and cardA2[3] == "spell":
+                        spellA = cardA2
+                        spellcasting(cardA2)
+                        cardA = spellA
+                        removeFromHand()
+                        spellA = "default"
+                        break
+                    elif spell_choice == "3" and cardA3[3] == "spell":
+                        spellA = cardA3
+                        spellcasting(cardA3)
+                        cardA = spellA
+                        removeFromHand()
+                        spellA = "default"
+                        break
+                    else:
+                       break
+                else:
+                    break
+        return creatureA, creatureB, damage, playerHealthA, playerHealthB, damageaverted, spell_choice, spellA, spellB, cardA1, cardA2, cardA3 , spell_selection,
+
 strengthA=0
 strengthB=0
 damage=0
@@ -464,71 +547,10 @@ def fight():
     global startfightcounter
     drawA()
     drawB()
-    if spellA == "default":
-        while creatureB[3] != "default": 
-            if cardA1[3] == "spell":
-                spell_selection1 = ("([1]")
-                spell_selection2 = (cardA1[0])
-                spell_selection3 = (")")
-                spell_choice1 = "1"
-            elif cardA1[3] != "spell":
-                spell_selection1 = ("([/]")
-                spell_selection2 = (cardA1[0])
-                spell_selection3 = (")")
-                spell_choice1 = "/"
-            if cardA2[3] == "spell":
-                spell_selection4 = ("([2]")
-                spell_selection5 = (cardA2[0])
-                spell_selection6 = (")")
-                spell_choice2 = "2"
-            elif cardA2[3] != "spell":
-                spell_selection4 = ("([/]")
-                spell_selection5 = (cardA2[0])
-                spell_selection6 = (")")
-                spell_choice2 = "/"
-            if cardA3[3] == "spell":
-                spell_selection7 = ("([3]")
-                spell_selection8 = (cardA3[0])
-                spell_selection9 = (")")
-                spell_choice3 = "3"
-            elif cardA3[3] != "spell":
-                spell_selection7 = ("([/]")
-                spell_selection8 = (cardA3[0])
-                spell_selection9 = (")")
-                spell_choice3 = "/"
-            if cardA1[3] == "spell" or cardA2[3] == "spell" or cardA3[3] == "spell":
-                print(spell_selection1,spell_selection2,spell_selection3,spell_selection4,spell_selection5,spell_selection6,spell_selection7,spell_selection8,spell_selection9)
-                spell_choice = input(f"Select a spell({spell_choice1}|{spell_choice2}|{spell_choice3})(Select nothing for no spell). enter to start fight ")
-                startfightcounter = 1
-                if spell_choice == "1" and cardA1[3] == "spell":
-                    spellA = cardA1
-                    spellcasting(cardA1)
-                    cardA = spellA
-                    removeFromHand()
-                    spellA = "default"
-                    break
-                elif spell_choice == "2" and cardA2[3] == "spell":
-                    spellA = cardA2
-                    spellcasting(cardA2)
-                    cardA = spellA
-                    removeFromHand()
-                    spellA = "default"
-                    break
-                elif spell_choice == "3" and cardA3[3] == "spell":
-                    spellA = cardA3
-                    spellcasting(cardA3)
-                    cardA = spellA
-                    removeFromHand()
-                    spellA = "default"
-                    break
-                else:
-                   break
-            else:
-                break
+    roll()
     if startfightcounter == 0:
         print(input("enter to start fight "))
     startfightcounter = 0
-    roll()
     sA=copy.copy(creatureA[1])
     sB=copy.copy(creatureB[1])
     print("")
@@ -686,8 +708,9 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
             drawB()
             if firstround == 1:
                 print(f"Round {firstround}")
-            cardSelection(handA,handB)
+            creatureSelection(handA,handB)
             removeFromHand()
+            spellSelection()
             strength_reduction()
             print("You:",creatureA[0],"S:",creatureA[1],"H:",creatureA[2])
             print("Enemy:",creatureB[0],"S:",creatureB[1],"H:",creatureB[2])
