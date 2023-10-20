@@ -5,8 +5,9 @@ import os
 import pathlib
 # To do:
 # Stats tab
-# Make the selection look better
 # Update turtorial
+# Split the code
+# fix strength reduction AGAIN
 # Effect creatures
 # Deck editor
 
@@ -62,7 +63,7 @@ def drawA():
     if cardA1[3] != "creature" and cardA1[3] != "creatureE" and cardA2[3] != "creature" and cardA2[3] != "creatureE" and cardA3[3] != "creature" and cardA3[3] != "creatureE":
         print("You have no creature, select a card to discard")
         print("[1]",cardA1[0],"[2]",cardA2[0],"[3]",cardA3[0])
-        discard_choice = input("(1/2/3) ")
+        discard_choice = input("(1|2|3) ")
         if discard_choice == "1":
             cardA1 = "default"
             drawA()
@@ -502,7 +503,7 @@ def fight():
                 spell_choice3 = "/"
             if cardA1[3] == "spell" or cardA2[3] == "spell" or cardA3[3] == "spell":
                 print(spell_selection1,spell_selection2,spell_selection3,spell_selection4,spell_selection5,spell_selection6,spell_selection7,spell_selection8,spell_selection9)
-                spell_choice = input(f"Select a spell({spell_choice1}|{spell_choice2}|{spell_choice3}). enter to start fight and to skip spell selection ")
+                spell_choice = input(f"Select a spell({spell_choice1}|{spell_choice2}|{spell_choice3})(Select nothing for no spell). enter to start fight ")
                 startfightcounter = 1
                 if spell_choice == "1" and cardA1[3] == "spell":
                     spellA = cardA1
@@ -602,6 +603,7 @@ def check2():
 rounds = 2
 firstround = 1
 counterA = 0
+counterB = 1
 # This countes the played rounds
 def rounds_count():
     global rounds
@@ -618,7 +620,7 @@ def strength_reduction():
     sA=copy.copy(creatureA[1])
     sB=copy.copy(creatureB[1])
 
-    if counterA == 0:
+    if counterA != 1:
         creatureA[1] -= sB
         creatureB[1] -= sA
 
@@ -626,7 +628,7 @@ def strength_reduction():
             creatureA[1] = 1
         if creatureB[1] < 1:
             creatureB[1] = 1
-    if counterB == 0:
+    if counterB != 1:
         creatureB[1] -= sA
         creatureA[1] -= sB
 
