@@ -1,8 +1,7 @@
 import random
 import copy  
 import sys
-import os
-import pathlib
+
 # To do:
 # Stats tab
 # Update turtorial
@@ -10,9 +9,6 @@ import pathlib
 # fix strength reduction AGAIN
 # Effect creatures
 # Deck editor
-
-#test = os.getcwd()
-#print(test+"/Jolgerat/stats.py")
 
 # The creatures (0:names,1:strength,2:health,3:class)
 knight = ["Knight",6,12,"creature"]
@@ -269,13 +265,13 @@ def spell_trap():
         creatureB[1] -= 5
         creatureB[2] -= 5
         if creatureB[2] > 0:
-            if creatureB[1] < 0:
-                creatureB[1] = 0
+            if creatureB[1] <= 0:
+                creatureB[1] = 1
             print(f"Your enemys {creatureB[0]} has {creatureB[1]} strength and {creatureB[2]} health left")
         elif creatureB[2] <= 0:
             creatureB[2] = 0
-            if creatureB[1] < 0:
-                creatureB[1] = 0
+            if creatureB[1] <= 0:
+                creatureB[1] = 1
             print(f"Your enemys {creatureB[0]} is dead because of your Trap")
             trapcounter = 1
             creatureB = "default"
@@ -580,25 +576,44 @@ def check1():
     global playerHealthB
     if playerHealthA <= 0:
         playerHealthA = 0
-        print("You lost!")
-       # with open("Stats.py", "a") as f:
-        #    f.write("You: {}\nEnemy: {}\n".format(player_score, ai_score))
+        print("You loose!")
+        with open("stats.txt", "a") as s:
+            s.write("loose\n")
+        playerHealthA = 20
+        playerHealthB = 20
     elif playerHealthB <= 0:
-        playerHealthB
+        playerHealthB = 0
+        with open("stats.txt", "a") as s:
+            s.write("win\n")
         print("You win!")
+    return playerHealthB, playerHealthA
     
 def check2():
     global creatureA
     global creatureB
     global trapcounter
+    global playerHealthA
+    global playerHealthB
     if creatureA[2] <= 0:
         print("Your",creatureA[0] + "  is dead")
         creatureA= "default"
+        if len(deckA) == 0:
+            playerHealthA = 0
+            print("You have no cards left")
+        if len(deckB) == 0:
+            playerHealthB = 0
+            print("Your enemy has no cards left")
     elif creatureB[2] <= 0 and trapcounter != 1:
         print("Your enemys",creatureB[0] + " is dead")
         creatureB= "default"
+        if len(deckA) == 0:
+            playerHealthA = 0
+            print("You have no cards left")
+        if len(deckB) == 0:
+            playerHealthB = 0
+            print("Your enemy has no cards left")
     trapcounter = 0
-    return creatureA,creatureB, rounds, trapcounter
+    return creatureA,creatureB, rounds, trapcounter, playerHealthB, playerHealthA
 
 rounds = 2
 firstround = 1
@@ -641,14 +656,21 @@ def strength_reduction():
     counterB = 0
     return creatureA, creatureB, counterA, counterB
 
-
-# The preparation of the Stats.py file
-#if os.path.getsize("stats.py") == 0:
-#    with open("stats.py", "w") as f:
-#        f.write("Wins = 0\n")
-#        f.write("Looses = 0\n")
-
-
+def reset(playerHealthA,playerHealthB):
+    playerHealthB = 20
+    playerHealthA = 20
+    return playerHealthA, playerHealthB
+wins = 0
+looses = 0
+def w_and_l(wins,looses):
+    with open("stats.txt", "r") as s:
+              for line in s:
+                  if "win" in line:
+                      wins += 1
+                  if "loose" in line:
+                      looses += 1
+    print(f"Wins: {wins}\nLooses: {looses}")
+    return wins, looses
 # the menu
 print("WELCOME TO JOLGERAT")
 print(" ")
@@ -677,6 +699,7 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
             check1()
             rounds_count()
             firstround = 2
+        reset(playerHealthA,playerHealthB)
         print(" ")
         input("enter to go back to main menu ")
         print(" ")
@@ -707,9 +730,7 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
         firstChoice = input("1/2/3/4/5 ")
         print("")
     elif firstChoice == "3": # Stats 
-        print("This feature is not done yet. Come back another time :)")
-        #with open("stats.py", "r") as f:
-       #      print(f.read())
+        w_and_l(wins,looses)
         input("enter to go back to main menu ")
         print(" ")
         print("[1] Play")
