@@ -3,12 +3,11 @@ import copy
 import sys
 
 # To do:
-# Stats tab
-# Update turtorial
 # Split the code
 # fix strength reduction AGAIN
 # Effect creatures
 # Deck editor
+# Update turtorial
 
 # The creatures (0:names,1:strength,2:health,3:class)
 knight = ["Knight",6,12,"creature"]
