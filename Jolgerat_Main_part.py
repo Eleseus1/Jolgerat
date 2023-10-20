@@ -579,8 +579,6 @@ def check1():
         print("You loose!")
         with open("stats.txt", "a") as s:
             s.write("loose\n")
-        playerHealthA = 20
-        playerHealthB = 20
     elif playerHealthB <= 0:
         playerHealthB = 0
         with open("stats.txt", "a") as s:
