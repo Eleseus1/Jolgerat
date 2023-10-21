@@ -2,10 +2,12 @@ import random
 import copy  
 import sys
 import Jolgerat_draw as d
+import Jolgerat_Effect_Creatures as e
 
 # To do:
-# Effect creatures
+# Fix damage calculation and fix e creatures
 # Deck editor
+# info function
 # Update turtorial
 
 # The dice
@@ -30,7 +32,6 @@ spellA = "default"
 spellB = "default" # right now bots can't use spells so this variable is useless
 sac_decision = []
 text = "default"
-spell_selection =  []
 spell_choice = "default"
 
 # The functions for the spells
@@ -47,6 +48,7 @@ def spell_joker():
     print("The field is empty now")
     d.draw()
     creatureSelection(d.handA,d.handB)
+    removeFromHand()
     strength_reduction()
     return creatureA,creatureB
 def spell_sacrifice_shield1(): 
@@ -103,6 +105,8 @@ def spell_sacrifice_shield2():
                     if damage < 0:
                         damage = 0
                     text = (f"Your {d.cardA1[0]} saved you from {damage2} damage, you only lose {damage} health")
+                    if damage == 0:
+                        text = (f"Your {d.cardA1[0]} saved you from {damage2} damage, you lose no health")
                     print(text)
                     damageaverted = damage2 - damage
                     if damageaverted > damage2:
@@ -117,6 +121,8 @@ def spell_sacrifice_shield2():
                     if damage < 0:
                         damage = 0
                     text = (f"Your {d.cardA2[0]} saved you from {damage2} damage, you only lose {damage} health")
+                    if damage == 0:
+                        text = (f"Your {d.cardA2[0]} saved you from {damage2} damage, you lose no health")
                     print(text)
                     damageaverted = damage2 - damage
                     if damageaverted > damage2:
@@ -131,6 +137,8 @@ def spell_sacrifice_shield2():
                     if damage < 0:
                         damage = 0
                     text = (f"Your {d.cardA3[0]} saved you from {damage2} damage, you only lose {damage} health")
+                    if damage == 0:
+                        text = (f"Your {d.cardA3[0]} saved you from {damage2} damage, you lose no health")
                     print(text)
                     damageaverted = damage2 - damage
                     if damageaverted > damage2:
@@ -154,6 +162,7 @@ def spell_execution():
         d.cardA3 = "default"
     d.draw()
     creatureSelection(d.handA, d.handB)
+    removeFromHand()
     strength_reduction()
     return creatureA, d.handA, d.handB, creatureB
 def spell_trap():
@@ -176,6 +185,7 @@ def spell_trap():
             trapcounter = 1
             creatureB = "default"
             creatureSelection(d.handA,d.handB)
+            removeFromHand()
             strength_reduction()
     elif creatureB == "default":
         print("You can't play a trap now")
@@ -205,9 +215,9 @@ def creatureSelection(handA, handB):
     global creatureB
     global spellA
     global spellB
-    global spell_selection
-    global counterdeploy
-    global counterdeploy
+    global deploycounter
+    global deploycounterA
+    global deploycounterB
     global cardA
     global cardB
 
@@ -216,7 +226,8 @@ def creatureSelection(handA, handB):
         creatureB = cardB
         if firstround != 1:
             print(f"Your enemy delpoied a {creatureB[0]}")
-        counterdeploy = 1
+        deploycounter = True
+        deploycounterB = True
     if d.cardA1[3] == "creature" or d.cardA1[3] == "creatureE":
         creature_selection1 =("([1]")
         n1 =(d.cardA1[0])
@@ -268,23 +279,23 @@ def creatureSelection(handA, handB):
                 cardA = copy.deepcopy(d.cardA1)
                 creatureA = cardA
                 choice = "0"
-                counterdeploy = 1
+                deploycounter = True
                 break
             elif choice == "2" and d.cardA2[3] != "spell" and d.cardA2[3] != "spellspecial":
                 cardA = copy.deepcopy(d.cardA2)
                 choice = "0"
                 creatureA = cardA
-                counterdeploy = 1
+                deploycounter = True
                 break
             elif choice == "3" and d.cardA3[3] != "spell" and d.cardA3[3] != "spellspecial":
                 cardA = copy.deepcopy(d.cardA3)
                 creatureA = cardA
                 choice = "0"
-                counterdeploy = 1
+                deploycounter = True
                 break
             else:
                 print("please select a creature")
-    return cardA, choice, cardB, creatureA, creatureB, spell_selection, spellA, spellB, counterdeploy, counterdeploy, d.handA, d.handB, d.cardA1, d.cardA2, d.cardA3, d.cardB1, d.cardB2, d.cardB3
+    return cardA, choice, cardB, creatureA, creatureB, spellA, spellB, deploycounter, deploycounter, d.handA, d.handB, d.cardA1, d.cardA2, d.cardA3, d.cardB1, d.cardB2, d.cardB3
 
 # This function removes cards from the hands # to do
 def removeFromHand():
@@ -321,7 +332,6 @@ def spellSelection():
         global spell_choice
         global spellA
         global spellB
-        global spell_selection
         global cardA
         global startfightcounter
         if spellA == "default":
@@ -385,7 +395,7 @@ def spellSelection():
                        break
                 else:
                     break
-        return creatureA, creatureB, damage, playerHealthA, playerHealthB, damageaverted, spell_choice, spellA, spellB, d.cardA1, d.cardA2, d.cardA3 , spell_selection,
+        return creatureA, creatureB, damage, playerHealthA, playerHealthB, damageaverted, spell_choice, spellA, spellB, d.cardA1, d.cardA2, d.cardA3
 
 strengthA=0
 strengthB=0
@@ -415,10 +425,8 @@ def fight():
     global spell_choice
     global spellA
     global spellB
-    global spell_selection
     global cardA
     global startfightcounter
-    d.draw()
     d.draw()
     roll()
     if startfightcounter == 0:
@@ -465,8 +473,7 @@ def fight():
             print(f"Your enemys {creatureB[0]} wins with {strengthB} strenght against {strengthA} strength and inflicts {damage} damage to your {creatureA[0]}")
     elif strengthA == strengthB:
         print("Draw")
-    spell_selection = []
-    return creatureA, creatureB, damage, playerHealthA, playerHealthB, damageaverted, spell_choice, spellA, spellB, d.cardA1, d.cardA2, d.cardA3 , spell_selection,
+    return creatureA, creatureB, damage, playerHealthA, playerHealthB, damageaverted, spell_choice, spellA, spellB, d.cardA1, d.cardA2, d.cardA3
 
 # These functions check if a creature or the player is dead, and it tracks the looses and the wins
 def check1():
@@ -488,7 +495,7 @@ def check2():
     global trapcounter
     global playerHealthA
     global playerHealthB
-    if creatureA[2] <= 0:
+    if creatureA[2] <= 0 and creatureA[0] != "Ghost":
         print("Your",creatureA[0] + "  is dead")
         strength_reduction()
         creatureA= "default"
@@ -498,7 +505,7 @@ def check2():
         if len(d.deckB) == 0:
             playerHealthB = 0
             print("Your enemy has no cards left")
-    elif creatureB[2] <= 0 and trapcounter != 1:
+    elif creatureB[2] <= 0 and trapcounter != 1 and creatureB[0] != "Ghost":
         strength_reduction()
         print("Your enemys",creatureB[0] + " is dead")
         creatureB= "default"
@@ -508,13 +515,35 @@ def check2():
         if len(d.deckB) == 0:
             playerHealthB = 0
             print("Your enemy has no cards left")
+    if creatureA[0] == "Ghost" and creatureA[1] <= 0:
+            print("Your",creatureA[0] + "  is dead")
+            strength_reduction()
+            creatureA= "default"
+            if len(d.deckA) == 0:
+                playerHealthA = 0
+                print("You have no cards left")
+            if len(d.deckB) == 0:
+                playerHealthB = 0
+                print("Your enemy has no cards left")
+    if creatureB[0] == "Ghost" and creatureB[1] <= 0:
+        if creatureB[1] == 0:
+            strength_reduction()
+            print("Your enemys",creatureB[0] + " is dead")
+            creatureB= "default"
+            if len(d.deckA) == 0:
+                playerHealthA = 0
+                print("You have no cards left")
+            if len(d.deckB) == 0:
+                playerHealthB = 0
+                print("Your enemy has no cards left")
     trapcounter = 0
     return creatureA,creatureB, rounds, trapcounter, playerHealthB, playerHealthA
 
 rounds = 2
 firstround = 1
-counterdeploy = 0
-counterdeploy = 1
+deploycounter = False
+deploycounterA = False
+deploycounterB = False
 # This countes the played rounds
 def rounds_count():
     global rounds
@@ -525,32 +554,42 @@ def rounds_count():
 def strength_reduction():
     global creatureA
     global creatureB
-    global counterdeploy
-    global counterdeploy
+    global deploycounter
 
     sA=copy.copy(creatureA[1])
     sB=copy.copy(creatureB[1])
 
-    if counterdeploy != 1:
+    if deploycounter == False and creatureB[0] != "Ghost":
         creatureB[1] -= sA
         if creatureB[1] < 1:
             creatureB[1] = 1
 
-    if counterdeploy != 1:
+    if deploycounter == False and creatureA[0] != "Ghost":
         creatureA[1] -= sB
         if creatureA[1] < 1:
             creatureA[1] = 1
 
-    return creatureA, creatureB, counterdeploy, counterdeploy
+    if deploycounter == False and creatureA[0] == "Ghost":
+        creatureA[1] -= sB
+        if creatureA[1] < 0:
+            creatureA[1] = 0
+    if deploycounter == False and creatureB[0] == "Ghost":
+        creatureB[1] -= sA
+        if creatureB[1] < 0:
+            creatureB[1] = 0
 
-def reset(playerHealthA,playerHealthB):
+    return creatureA, creatureB, deploycounter
+
+def reset(playerHealthA,playerHealthB): # Tis resets the game so you can play two times without restarting
     playerHealthA = 20
     playerHealthB = 20
-    return playerHealthA, playerHealthB
+    d.deckA = copy.deepcopy(d.standardDeckA)
+    d.deckB = copy.deepcopy(d.standardDeckB)
+    return playerHealthA, playerHealthB, d.deckA, d.deckB
 wins = 0
 looses = 0
 games = 0
-def w_and_l(wins,looses,games):
+def w_and_l(wins,looses,games): # If you want to test this function without playing games just write "win" and "loose" as often as you want in stats.txt(everything needs an own line)
     with open("stats.txt", "r") as s:
                 for line in s:
                     if "win" in line:
@@ -560,8 +599,7 @@ def w_and_l(wins,looses,games):
                     games += 1
     print(f"Games Played: {games}\nWins: {wins}\nLooses: {looses}")
     return wins, looses, games
-# the menu
-print("WELCOME TO JOLGERAT")
+
 print(" ")
 print("[1] Play")
 print("[2] Tutorial")
@@ -574,17 +612,19 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
     if firstChoice == "1": # play
         # The core
         while playerHealthA > 0 and playerHealthB > 0:
-            d.draw() 
             d.draw()
             if firstround == 1:
                 print(f"Round {firstround}")
             creatureSelection(d.handA,d.handB)
             removeFromHand()
+            e.eactivation(creatureA,creatureB,deploycounterA,deploycounterB)
             strength_reduction()
             print("You:",creatureA[0],"S:",creatureA[1],"H:",creatureA[2])
             print("Enemy:",creatureB[0],"S:",creatureB[1],"H:",creatureB[2])
             spellSelection()
-            counterdeploy = 0
+            deploycounter = False
+            deploycounterA = False
+            deploycounterB = False
             fight()
             check2()
             check1()
@@ -658,15 +698,17 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
             print("")
 
 # I used this codeblock to test everything
-#d.draw()
-#d.draw()
-#cardSelection(handA,handB)
-#print("Your card: ",fieldA[0],"S:",fieldA[1],"H:" fieldA[3])
-#print("Opponents card",fieldB[0],"S:",fieldB[2],"H:",fieldB[3])
-#removeFromHand()
-#fight(fieldA,fieldB)
-#d.draw()
-#d.draw()
-#cardSelection(handA,handB)
-#print("Your card: ",fieldA[0],"S:",fieldA[1],"H:",fieldA[3])
-#print("Opponents card",fieldB[0],"S:",fieldB[2],"H:",fieldB[3])
+"""
+drawA()
+drawB()
+cardSelection(handA,handB)
+print("Your card: ",fieldA[0],"S:",fieldA[1],"H:" fieldA[3])
+print("Opponents card",fieldB[0],"S:",fieldB[2],"H:",fieldB[3])
+removeFromHand()
+fight(fieldA,fieldB)
+drawA()
+drawB()
+cardSelection(handA,handB)
+print("Your card: ",fieldA[0],"S:",fieldA[1],"H:",fieldA[3])
+print("Opponents card",fieldB[0],"S:",fieldB[2],"H:",fieldB[3])
+"""

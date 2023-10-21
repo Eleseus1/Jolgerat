@@ -29,6 +29,10 @@ deckA = [
 deckB = copy.deepcopy(deckA)
 deckB = [card for card in deckB if card[3] != "spell" and card[3] != "spellspecial"]
 
+standardDeckA = copy.deepcopy(deckA)
+standardDeckB = copy.deepcopy(standardDeckA)
+standardDeckB = [card for card in standardDeckB if card[3] != "spell" and card[3] != "spellspecial"]
+
 cardA1 = "default"
 cardA2 = "default"
 cardA3 = "default"
