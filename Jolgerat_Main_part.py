@@ -49,6 +49,9 @@ def spell_joker():
     d.draw()
     creatureSelection(d.handA,d.handB)
     removeFromHand()
+    e.eactivation(creatureA,creatureB,deploycounterA,deploycounterB)
+    creatureSelection(d.handA,d.handB)
+    removeFromHand()
     strength_reduction()
     return creatureA,creatureB
 def spell_sacrifice_shield1(): 
@@ -65,6 +68,8 @@ def spell_sacrifice_shield2():
     global damage
     global damageaverted
     global text
+    global cardA
+    global cardB
     if playerHealthA < pHA and d.sacrifice_shield in d.handA:
         choice = input("You are about to take " + str(damage) + " damage! Do you want to use a Sacrifice Shield?[y/n] ")
         if choice == "y":
@@ -111,6 +116,8 @@ def spell_sacrifice_shield2():
                     damageaverted = damage2 - damage
                     if damageaverted > damage2:
                         damageaverted = damage2
+                    cardA = d.cardA1
+                    removeFromHand()
                     break
                 elif sacrifice == "1" and sac_decision1 == "[/]":
                     print("You can't sacrifice that card")
@@ -127,6 +134,8 @@ def spell_sacrifice_shield2():
                     damageaverted = damage2 - damage
                     if damageaverted > damage2:
                         damageaverted = damage2
+                    cardA = d.cardA2
+                    removeFromHand()
                     break
                 elif sacrifice == "2" and sac_decision2 == "[/]":
                     print("You can't sacrifice that card")
@@ -143,6 +152,8 @@ def spell_sacrifice_shield2():
                     damageaverted = damage2 - damage
                     if damageaverted > damage2:
                         damageaverted = damage2
+                    cardA = d.cardA3
+                    removeFromHand()
                     break
                 elif sacrifice == "3" and sac_decision5 == "[/]":
                     print("You can't sacrifice that card")
@@ -162,6 +173,9 @@ def spell_execution():
         d.cardA3 = "default"
     d.draw()
     creatureSelection(d.handA, d.handB)
+    removeFromHand()
+    e.eactivation(creatureA,creatureB,deploycounterA,deploycounterB)
+    creatureSelection(d.handA,d.handB)
     removeFromHand()
     strength_reduction()
     return creatureA, d.handA, d.handB, creatureB
@@ -184,6 +198,9 @@ def spell_trap():
             print(f"Your enemys {creatureB[0]} is dead because of your Trap")
             trapcounter = 1
             creatureB = "default"
+            creatureSelection(d.handA,d.handB)
+            removeFromHand()
+            e.eactivation(creatureA,creatureB,deploycounterA,deploycounterB)
             creatureSelection(d.handA,d.handB)
             removeFromHand()
             strength_reduction()
@@ -280,18 +297,21 @@ def creatureSelection(handA, handB):
                 creatureA = cardA
                 choice = "0"
                 deploycounter = True
+                deploycounterA = True
                 break
             elif choice == "2" and d.cardA2[3] != "spell" and d.cardA2[3] != "spellspecial":
                 cardA = copy.deepcopy(d.cardA2)
                 choice = "0"
                 creatureA = cardA
                 deploycounter = True
+                deploycounterA = True
                 break
             elif choice == "3" and d.cardA3[3] != "spell" and d.cardA3[3] != "spellspecial":
                 cardA = copy.deepcopy(d.cardA3)
                 creatureA = cardA
                 choice = "0"
                 deploycounter = True
+                deploycounterA = True
                 break
             else:
                 print("please select a creature")
@@ -498,6 +518,7 @@ def check2():
     if creatureA[2] <= 0 and creatureA[0] != "Ghost":
         print("Your",creatureA[0] + "  is dead")
         strength_reduction()
+        e.eactivation(creatureA,creatureB,deploycounterA,deploycounterB)
         creatureA= "default"
         if len(d.deckA) == 0:
             playerHealthA = 0
@@ -508,6 +529,7 @@ def check2():
     elif creatureB[2] <= 0 and trapcounter != 1 and creatureB[0] != "Ghost":
         strength_reduction()
         print("Your enemys",creatureB[0] + " is dead")
+        e.eactivation(creatureA,creatureB,deploycounterA,deploycounterB)
         creatureB= "default"
         if len(d.deckA) == 0:
             playerHealthA = 0
@@ -518,6 +540,7 @@ def check2():
     if creatureA[0] == "Ghost" and creatureA[1] <= 0:
             print("Your",creatureA[0] + "  is dead")
             strength_reduction()
+            e.eactivation(creatureA,creatureB,deploycounterA,deploycounterB)
             creatureA= "default"
             if len(d.deckA) == 0:
                 playerHealthA = 0
@@ -525,10 +548,11 @@ def check2():
             if len(d.deckB) == 0:
                 playerHealthB = 0
                 print("Your enemy has no cards left")
-    if creatureB[0] == "Ghost" and creatureB[1] <= 0:
+    if creatureB[0] == "Ghost" and creatureB[1] <= 0 and trapcounter != 1:
         if creatureB[1] == 0:
             strength_reduction()
             print("Your enemys",creatureB[0] + " is dead")
+            e.eactivation(creatureA,creatureB,deploycounterA,deploycounterB)
             creatureB= "default"
             if len(d.deckA) == 0:
                 playerHealthA = 0
@@ -618,6 +642,8 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
             creatureSelection(d.handA,d.handB)
             removeFromHand()
             e.eactivation(creatureA,creatureB,deploycounterA,deploycounterB)
+            creatureSelection(d.handA,d.handB)
+            removeFromHand()
             strength_reduction()
             print("You:",creatureA[0],"S:",creatureA[1],"H:",creatureA[2])
             print("Enemy:",creatureB[0],"S:",creatureB[1],"H:",creatureB[2])
