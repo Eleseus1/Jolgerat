@@ -60,10 +60,16 @@ def e_jester(creatureA,creatureB,counter):
           creatureA[2] = 5
           creatureB[1] = 5
           creatureB[2] = 5
+    if creatureA[0] == "Jester" and creatureB[0] == "Ghost":
+          creatureA[1] = creatureB[1]
+          creatureA[2] = 1
+    if creatureA[0] == "Jester" and creatureB[0] == "Cursed Magician":
+          counterC = "/"
+          e_cursedmagician(creatureA,counterC)
     if counter == "A":
-        print(f"Your Jester copyed your enemys {creatureB[0]}")
+        print(f"Your Jester copied your enemys {creatureB[0]}")
     if counter == "B":
-        print(f"Your enemys Jester copyed your {creatureB[0]}")
+        print(f"Your enemys Jester copied your {creatureB[0]}")
     return creatureA, creatureB
 def e_maskmaster(deck,creature):
         creatures = c.deepcopy(deck)

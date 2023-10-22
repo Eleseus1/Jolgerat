@@ -83,22 +83,22 @@ def spell_sacrifice_shield2():
                 d.cardA3 = "default"
                 d.draw()
 
-            if d.cardA1[3] == "creature" or d.cardA1[3] == "creatureE":
+            if d.cardA1[3] == "creature" or d.cardA1[3] == "creatureE" and d.cardA1[0] != "Jester":
                 sac_decision1 =("[1]")
                 sac_decision2 =(d.cardA1[0],d.cardA1[1],d.cardA1[2])
-            elif d.cardA1[3] != "creature" or d.cardA1[3] != "creatureE":
+            elif d.cardA1[3] != "creature" or d.cardA1[3] != "creatureE" or d.cardA1[0] == "Jester":
                 sac_decision1 =("[/]")
                 sac_decision2 =("")
-            if d.cardA2[3] == "creature" or d.cardA2[3] == "creatureE":
+            if d.cardA2[3] == "creature" or d.cardA2[3] == "creatureE" and d.cardA2[0] != "Jester":
                 sac_decision3 =("[2]")
                 sac_decision4 =(d.cardA2[0],d.cardA2[1],d.cardA2[2])
-            elif d.cardA2[3] != "creature" or d.cardA2[3] != "creatureE":
+            elif d.cardA2[3] != "creature" or d.cardA2[3] != "creatureE" or d.cardA2[0] == "Jester":
                 sac_decision3 =("[/]")
                 sac_decision4 =("")
-            if d.cardA3[3] == "creature" or d.cardA3[3] == "creatureE":
+            if d.cardA3[3] == "creature" or d.cardA3[3] == "creatureE" and d.cardA3[0] != "Jester":
                 sac_decision5 =("[3]")
                 sac_decision6 =(d.cardA3[0],d.cardA3[1],d.cardA3[2])
-            elif d.cardA3[3] != "creature" or d.cardA3[3] != "creatureE":
+            elif d.cardA3[3] != "creature" or d.cardA3[3] != "creatureE" or d.cardA3[0] == "Jester":
                 sac_decision5 =("[/]")
                 sac_decision6 =("")
             print(sac_decision1, sac_decision2, sac_decision3, sac_decision4, sac_decision5, sac_decision6)
@@ -537,29 +537,6 @@ def check2():
         if len(d.deckB) == 0:
             playerHealthB = 0
             print("Your enemy has no cards left")
-    if creatureA[0] == "Ghost" and creatureA[1] <= 0:
-            print("Your",creatureA[0] + "  is dead")
-            strength_reduction()
-            e.eactivation(creatureA,creatureB,deploycounterA,deploycounterB)
-            creatureA= "default"
-            if len(d.deckA) == 0:
-                playerHealthA = 0
-                print("You have no cards left")
-            if len(d.deckB) == 0:
-                playerHealthB = 0
-                print("Your enemy has no cards left")
-    if creatureB[0] == "Ghost" and creatureB[1] <= 0 and trapcounter != 1:
-        if creatureB[1] == 0:
-            strength_reduction()
-            print("Your enemys",creatureB[0] + " is dead")
-            e.eactivation(creatureA,creatureB,deploycounterA,deploycounterB)
-            creatureB= "default"
-            if len(d.deckA) == 0:
-                playerHealthA = 0
-                print("You have no cards left")
-            if len(d.deckB) == 0:
-                playerHealthB = 0
-                print("Your enemy has no cards left")
     trapcounter = 0
     return creatureA,creatureB, rounds, trapcounter, playerHealthB, playerHealthA
 
@@ -587,7 +564,6 @@ def strength_reduction():
         creatureB[1] -= sA
         if creatureB[1] < 1:
             creatureB[1] = 1
-
     if deploycounter == False and creatureA[0] != "Ghost":
         creatureA[1] -= sB
         if creatureA[1] < 1:
@@ -595,13 +571,23 @@ def strength_reduction():
 
     if deploycounter == False and creatureA[0] == "Ghost":
         creatureA[1] -= sB
-        if creatureA[1] < 0:
+        if creatureA[1] <= 0:
             creatureA[1] = 0
+            print("Your",creatureA[0] + "  is dead")
+            creatureA= "default"
+            creatureSelection(d.handA,d.handB)
+            removeFromHand()
+            e.eactivation(creatureA,creatureB,deploycounterA,deploycounterB)
     if deploycounter == False and creatureB[0] == "Ghost":
         creatureB[1] -= sA
-        if creatureB[1] < 0:
+        if creatureB[1] <= 0:
             creatureB[1] = 0
-
+            print("Your enemys",creatureB[0] + " is dead")
+            creatureB = "default"
+            creatureSelection(d.handA,d.handB)
+            removeFromHand()
+            e.eactivation(creatureA,creatureB,deploycounterA,deploycounterB)
+            
     return creatureA, creatureB, deploycounter
 
 def reset(playerHealthA,playerHealthB): # Tis resets the game so you can play two times without restarting
@@ -624,6 +610,8 @@ def w_and_l(wins,looses,games): # If you want to test this function without play
     print(f"Games Played: {games}\nWins: {wins}\nLooses: {looses}")
     return wins, looses, games
 
+one = 0
+print("WELCOME TO JOLGERAT")
 print(" ")
 print("[1] Play")
 print("[2] Tutorial")
@@ -633,9 +621,27 @@ print("[5] Exit")
 firstChoice = input("1/2/3/4/5 ")
 print("")
 while firstChoice == "1"or"2"or"3"or"4"or"5":
+    playcounter = 1
+    turtorialcounter = 1
+    statscounter = 1
+    creditscounter = 1
+    exitcounter = 1
+    deckeditorcounter = 1
+    mistakecounter = 1
+    if one == 1:
+        print(" ")
+        print("[1] Play")
+        print("[2] Tutorial")
+        print("[3] Stats")
+        print("[4] Credits")
+        print("[5] Exit")
+        firstChoice = input("1/2/3/4/5 ")
+        print("")
+    one = 1
     if firstChoice == "1": # play
         # The core
-        while playerHealthA > 0 and playerHealthB > 0:
+        while playcounter == 1:
+           while playerHealthA > 0 and playerHealthB > 0:
             d.draw()
             if firstround == 1:
                 print(f"Round {firstround}")
@@ -657,71 +663,38 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
             rounds_count()
             firstround = 2
         reset(playerHealthA,playerHealthB)
-        print(" ")
         input("enter to go back to main menu ")
-        print(" ")
-        print("[1] Play")
-        print("[2] Tutorial")
-        print("[3] Stats")
-        print("[4] Credits")
-        print("[5] Exit")
-        firstChoice = input("1/2/3/4/5 ")
         print("")
-    elif firstChoice == "2": # Turtorial ; Update turtorial
-        print("Each player draws three cards, then chooses one of the cards to play in the center.")
-        print("As soon as he plays a card, he draws a new one.")
-        print("Each card is a creature and each creature has a base strength and health.")
-        print("At the beginning of a combat sequence, each player rolls a dice, and the value rolled (additional strength) is added to the base strength for that combat sequence.")
-        print("The creature with the higher combat strength (base strength + additional strength) wins the combat")
-        print("and the creature that lost gets the combat strength it could not absorb with its own combat strength subtracted from its health.")
-        print("If a creature cannot absorb the combat strength with its own health, it dies and the excess combat strength is subtracted from the health of the player whose creature died.")
-        print("At the end of each battle, each creature loses base strength equal to the base strength of the other creature.")
-        print("Each player has 20 health, if the health of a player drops to 0, he has lost.")
-        input("enter to go back to main menu ")
-        print(" ")
-        print("[1] Play")
-        print("[2] Tutorial")
-        print("[3] Stats")
-        print("[4] Credits")
-        print("[5] Exit")
-        firstChoice = input("1/2/3/4/5 ")
-        print("")
-    elif firstChoice == "3": # Stats 
-        w_and_l(wins,looses,games)
-        input("enter to go back to main menu ")
-        print(" ")
-        print("[1] Play")
-        print("[2] Tutorial")
-        print("[3] Stats")
-        print("[4] Credits")
-        print("[5] Exit")
-        firstChoice = input("1/2/3/4/5 ")
-        print("")
-    elif firstChoice == "4": # Credits
-        print("Eleseus")
-        print("DVillablanca")
-        print("Chat GPT")
-        input("enter to go back to main menu ")
-        print(" ")
-        print("[1] Play")
-        print("[2] Tutorial")
-        print("[3] Stats")
-        print("[4] Credits")
-        print("[5] Exit")
-        firstChoice = input("1/2/3/4/5 ")
-        print("")
-    elif firstChoice == "5": # Exit 
-        exitchoice = input("Do you want to exit the game?[y/n] ")
-        if exitchoice == "y":
-            sys.exit()
-        else:
-            print("[1] Play")
-            print("[2] Tutorial")
-            print("[3] Stats")
-            print("[4] Credits")
-            print("[5] Exit")
-            firstChoice = input("1/2/3/4/5 ")
+        playcounter = 2 
+    elif firstChoice == "2": # Turtorial
+        while turtorialcounter == 1:
+            print("The turtorial is not done yet")
+            turtorialcounter = input("enter to go back to main menu ")
             print("")
+    elif firstChoice == "3": # Stats
+        while statscounter == 1: 
+            w_and_l(wins,looses,games)
+            statscounter = input("enter to go back to main menu ")
+            print("")
+    elif firstChoice == "4": # Credits
+        while creditscounter == 1:
+            print("Eleseus")
+            print("DVillablanca")
+            print("Chat GPT")
+            creditscounter = input("enter to go back to main menu ")
+            print("")
+    elif firstChoice == "5": # Exit 
+        while exitcounter == 1:
+            exitchoice = input("Do you want to exit the game?[y/n] ")
+            if exitchoice == "y":
+               sys.exit()
+            else:
+                exitcounter = input("enter to go back to main menu ")
+                print("")
+    else:
+        while mistakecounter == 1:
+           print(f"{firstChoice} is not an option")
+           mistakecounter = 2
 
 # I used this codeblock to test everything
 """
