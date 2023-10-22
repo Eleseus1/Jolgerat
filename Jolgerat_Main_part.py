@@ -5,7 +5,11 @@ import Jolgerat_draw as d
 import Jolgerat_Effect_Creatures as e
 
 # To do:
-# Fix damage calculation and fix e creatures
+# fix e creatures
+# Fix only spells skip
+# Fix starcatcher
+# Fix play loop
+# Fix mask master
 # Deck editor
 # info function
 # Update turtorial
@@ -501,10 +505,10 @@ def check1():
     global playerHealthB
     if playerHealthA <= 0:
         print("You loose!")
-        with open("stats.txt", "a") as s:
+        with open("jolgerat_stats.txt", "a") as s:
             s.write("loose\n")
     elif playerHealthB <= 0:
-        with open("stats.txt", "a") as s:
+        with open("jolgerat_stats.txt", "a") as s:
             s.write("win\n")
         print("You win!")
     return playerHealthB, playerHealthA
@@ -599,8 +603,8 @@ def reset(playerHealthA,playerHealthB): # Tis resets the game so you can play tw
 wins = 0
 looses = 0
 games = 0
-def w_and_l(wins,looses,games): # If you want to test this function without playing games just write "win" and "loose" as often as you want in stats.txt(everything needs an own line)
-    with open("stats.txt", "r") as s:
+def w_and_l(wins,looses,games): # If you want to test this function without playing games just write "win" and "loose" as often as you want in jolgerat_stats.txt(everything needs an own line)
+    with open("jolgerat_stats.txt", "r") as s:
                 for line in s:
                     if "win" in line:
                         wins += 1
