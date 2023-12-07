@@ -1,5 +1,7 @@
 import copy as c
 
+# Deck variables
+
 # The creatures (0:names,1:strength,2:health,3:class,4:effect index(0 = no effect))
 knight = ["Knight",6, 12, 2, 0]
 demon = ["Demon",15,10,2, 0]
@@ -48,3 +50,11 @@ cardB1 = "default"
 cardB2 = "default"
 cardB3 = "default"
 handB = "default"
+
+# Game core variables 
+
+fieldA = "default"
+fieldB = "default"
+
+spallA = "default"
+spellB = "default"
