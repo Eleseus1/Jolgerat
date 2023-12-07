@@ -500,18 +500,22 @@ def fight():
     return creatureA, creatureB, damage, playerHealthA, playerHealthB, damageaverted, spell_choice, spellA, spellB, d.cardA1, d.cardA2, d.cardA3
 
 # These functions check if a creature or the player is dead, and it tracks the looses and the wins
+game_end = False
 def check1():
     global playerHealthA
     global playerHealthB
+    game_end = False
     if playerHealthA <= 0:
         print("You loose!")
         with open("jolgerat_stats.txt", "a") as s:
             s.write("loose\n")
+        game_end = True
     elif playerHealthB <= 0:
         with open("jolgerat_stats.txt", "a") as s:
             s.write("win\n")
         print("You win!")
-    return playerHealthB, playerHealthA
+        game_end = True
+    return playerHealthB, playerHealthA, game_end
     
 def check2():
     global creatureA
@@ -666,6 +670,8 @@ while firstChoice == "1"or"2"or"3"or"4"or"5":
             check1()
             rounds_count()
             firstround = 2
+            if game_end == True:
+                break
         reset(playerHealthA,playerHealthB)
         input("enter to go back to main menu ")
         print("")

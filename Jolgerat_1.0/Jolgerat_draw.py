@@ -23,7 +23,7 @@ trap = ["Trap","","","spell"]
 # The decks
 deckA = [
     knight, knight, knight, knight, demon, demon, crow, crow, crow, crow, crow, prince, prince, prince, prince, skeleton, skeleton, skeleton, skeleton, # Creatures
-    jester, jester, maskmaster, starcatcher, ghost, cursedmagician, cursedmagician, # Effect creatures
+    #jester, jester, maskmaster, starcatcher, ghost, cursedmagician, cursedmagician, # Effect creatures
     joker, sacrifice_shield, sacrifice_shield, execution, execution, execution, smith, smith, smith, trap, trap # Spells
     ]
 deckB = copy.deepcopy(deckA)
