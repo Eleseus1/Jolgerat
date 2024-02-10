@@ -18,19 +18,25 @@ def drawA():
         v.deckA.remove(v.cardA3)
 
     v.handA = [v.cardA1,v.cardA2, v.cardA3]
-    if v.cardA1[3] != 0 and v.cardA1[3] != "1" and v.cardA2[3] != 0 and v.cardA2[3] != "1" and v.cardA3[3] != 0 and v.cardA3[3] != "1":
+    if v.cardA1[3] not in [1,2] and v.cardA2[3] not in [1,2] and v.cardA3[3] not in [1,2]:
         print("You have no creature, select a card to discard")
         print("[1]",v.cardA1[0],"[2]",v.cardA2[0],"[3]",v.cardA3[0])
-        discard_choice = input("(1|2|3) ")
-        if discard_choice == "1":
-            v.cardA1 = "default"
-            drawA()
-        elif discard_choice == "2":
-            v.cardA2 = "default"
-            drawA()
-        elif discard_choice == "3":
-            v.cardA3 = "default"
-            drawA()
+        while True:
+            discard_choice = input("(1|2|3) ")
+            if discard_choice == "1":
+                v.cardA1 = "default"
+                drawA()
+                break
+            elif discard_choice == "2":
+                v.cardA2 = "default"
+                drawA()
+                break
+            elif discard_choice == "3":
+                v.cardA3 = "default"
+                drawA()
+                break
+            else:
+                print("Please select one of the options")
 
 # This changes the cards from player B
 def drawB():
@@ -53,6 +59,6 @@ def draw():
     drawA()
     drawB()
 
-draw()
+"""draw()
 print(v.handA)
-print(v.handB)
+print(v.handB)"""
