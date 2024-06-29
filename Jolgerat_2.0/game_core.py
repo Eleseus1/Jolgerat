@@ -29,11 +29,15 @@ def check_card(field):
     if field[2] < 1:
         field = 'default'
 
-def dice():
-    aditional_strenght_a = r.randint(1, 6)
-    aditional_strenght_b = r.randint(1, 6)
+aditional_strenght_a = 1
+aditional_strenght_b = 2
+def dice(a, b):
+    a = r.randint(1, 6)
+    b = r.randint(1, 6)
 
-    return aditional_strenght_a, aditional_strenght_b
+    return a, b
 
 d.draw()
 creature_choice()
+dice(aditional_strenght_a, aditional_strenght_b)
+print(aditional_strenght_a, aditional_strenght_b)
