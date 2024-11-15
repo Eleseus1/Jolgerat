@@ -1,5 +1,5 @@
 import random
-import copy  
+import copy
 import sys
 import Jolgerat_draw as d
 import Jolgerat_Effect_Creatures as e
